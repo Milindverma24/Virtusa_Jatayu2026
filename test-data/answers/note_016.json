@@ -1,0 +1,19 @@
+{
+  "medications": [
+    {
+      "time": "05:22",
+      "drug": "atropine",
+      "dose_value": 1.0,
+      "dose_unit": "mg",
+      "route": "IV",
+      "source_text": "05:22 administered atropine 1 mg IV push"
+    }
+  ],
+  "procedures": [
+    {
+      "name": "transcutaneous pacing",
+      "details": "70 bpm 60 mA",
+      "source_text": "initiated transcutaneous pacing at 70 bpm 60 mA"
+    }
+  ]
+}

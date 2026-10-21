@@ -1,0 +1,20 @@
+{
+  "medications": [
+    {
+      "time": "22:05",
+      "drug": "naloxone",
+      "dose_value": 2.0,
+      "dose_unit": "mg",
+      "route": "IN",
+      "source_text": "22:05 gave naloxone 2 mg IN"
+    },
+    {
+      "time": "22:09",
+      "drug": "naloxone",
+      "dose_value": 2.0,
+      "dose_unit": "mg",
+      "source_text": "gave 2 mg at 22:09"
+    }
+  ],
+  "procedures": []
+}

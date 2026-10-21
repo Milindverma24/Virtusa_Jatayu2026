@@ -1,0 +1,19 @@
+{
+  "medications": [
+    {
+      "time": "16:42",
+      "drug": "adenosine",
+      "dose_value": 6.0,
+      "dose_unit": "mg",
+      "route": "IV",
+      "source_text": "16:42 administered adenosine 6 mg rapid IV push"
+    }
+  ],
+  "procedures": [
+    {
+      "name": "vagal maneuver",
+      "details": "modified Valsalva maneuver",
+      "source_text": "Performed modified Valsalva maneuver"
+    }
+  ]
+}

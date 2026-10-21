@@ -1,0 +1,19 @@
+{
+  "medications": [
+    {
+      "drug": "oxygen",
+      "dose_value": 15.0,
+      "dose_unit": "L/min",
+      "route": "INH",
+      "source_text": "15 L/min O2"
+    }
+  ],
+  "procedures": [
+    {
+      "time": "04:30",
+      "name": "CPAP",
+      "details": "10 cmH2O",
+      "source_text": "Started CPAP at 10 cmH2O at 04:30"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "medications": [
+    {
+      "drug": "aspirin",
+      "dose_value": 324.0,
+      "dose_unit": "mg",
+      "route": "PO",
+      "source_text": "ASA 324 mg chewed"
+    },
+    {
+      "drug": "oxygen",
+      "dose_value": 2.0,
+      "dose_unit": "L/min",
+      "route": "INH",
+      "source_text": "2 L/min oxygen nasal cannula"
+    }
+  ],
+  "procedures": [
+    {
+      "time": "20:10",
+      "name": "12-lead ECG",
+      "details": "anterolateral ST elevation",
+      "source_text": "12-lead ECG completed at 20:10"
+    }
+  ]
+}

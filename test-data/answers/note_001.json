@@ -1,0 +1,27 @@
+{
+  "medications": [
+    {
+      "time": "14:32",
+      "drug": "aspirin",
+      "dose_value": 324.0,
+      "dose_unit": "mg",
+      "route": "PO",
+      "source_text": "14:32 gave aspirin 324 mg PO chewed"
+    },
+    {
+      "time": "14:38",
+      "drug": "nitroglycerin",
+      "dose_value": 0.4,
+      "dose_unit": "mg",
+      "route": "SL",
+      "source_text": "14:38 nitro point four under the tongue"
+    }
+  ],
+  "procedures": [
+    {
+      "name": "IV access",
+      "details": "18G, left antecubital",
+      "source_text": "IV 18 gauge left AC"
+    }
+  ]
+}

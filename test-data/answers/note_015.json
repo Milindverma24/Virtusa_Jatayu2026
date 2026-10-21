@@ -1,0 +1,19 @@
+{
+  "medications": [
+    {
+      "time": "18:02",
+      "drug": "fentanyl",
+      "dose_value": 100.0,
+      "dose_unit": "mcg",
+      "route": "IV",
+      "source_text": "18:02 gave fentanyl fifty, I mean, one hundred micrograms slow IV push"
+    }
+  ],
+  "procedures": [
+    {
+      "name": "splinting",
+      "details": "left lower extremity",
+      "source_text": "Splinting applied to left lower extremity"
+    }
+  ]
+}

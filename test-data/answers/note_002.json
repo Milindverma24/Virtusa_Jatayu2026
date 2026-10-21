@@ -1,0 +1,12 @@
+{
+  "medications": [
+    {
+      "drug": "oxygen",
+      "dose_value": 4.0,
+      "dose_unit": "L/min",
+      "route": "INH",
+      "source_text": "Gave 4 L/min O2 by nasal cannula"
+    }
+  ],
+  "procedures": []
+}

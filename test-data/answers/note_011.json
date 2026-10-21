@@ -1,0 +1,29 @@
+{
+  "medications": [
+    {
+      "time": "07:10",
+      "drug": "aspirin",
+      "dose_value": 324.0,
+      "dose_unit": "mg",
+      "route": "PO",
+      "source_text": "07:10 gave aspirin 324 mg PO"
+    },
+    {
+      "time": "07:15",
+      "drug": "nitroglycerin",
+      "dose_value": 0.4,
+      "dose_unit": "mg",
+      "route": "SL",
+      "source_text": "07:15 nitro point four mg SL given"
+    },
+    {
+      "time": "07:20",
+      "drug": "nitroglycerin",
+      "dose_value": 0.4,
+      "dose_unit": "mg",
+      "route": "SL",
+      "source_text": "07:20 second nitroglycerin 0.4 mg SL given"
+    }
+  ],
+  "procedures": []
+}

@@ -1,0 +1,104 @@
+{
+  "aspirin": {
+    "aliases": ["asa", "bayer", "acetylsalicylic acid"],
+    "units": ["mg"],
+    "range": [81, 325],
+    "routes": ["PO"]
+  },
+  "nitroglycerin": {
+    "aliases": ["nitro", "ntg", "nitrostat"],
+    "units": ["mg"],
+    "range": [0.3, 0.4],
+    "routes": ["SL"]
+  },
+  "epinephrine": {
+    "aliases": ["epi", "adrenaline", "epipen"],
+    "units": ["mg"],
+    "range": [0.01, 1.0],
+    "routes": ["IM", "IV", "IO", "ET", "SC"]
+  },
+  "naloxone": {
+    "aliases": ["narcan"],
+    "units": ["mg"],
+    "range": [0.4, 4.0],
+    "routes": ["IN", "IV", "IM", "IO"]
+  },
+  "ondansetron": {
+    "aliases": ["zofran"],
+    "units": ["mg"],
+    "range": [4.0, 8.0],
+    "routes": ["IV", "PO", "IM"]
+  },
+  "oxygen": {
+    "aliases": ["o2", "supplemental oxygen"],
+    "units": ["L/min"],
+    "range": [1.0, 15.0],
+    "routes": ["INH"]
+  },
+  "albuterol": {
+    "aliases": ["ventolin", "proair", "salbutamol"],
+    "units": ["mg"],
+    "range": [2.5, 5.0],
+    "routes": ["NEB", "INH"]
+  },
+  "ipratropium": {
+    "aliases": ["atrovent"],
+    "units": ["mg"],
+    "range": [0.25, 0.5],
+    "routes": ["NEB", "INH"]
+  },
+  "dextrose": {
+    "aliases": ["d50", "d50w", "dextrose 50%", "d10", "d10w"],
+    "units": ["g"],
+    "range": [10.0, 25.0],
+    "routes": ["IV", "IO"]
+  },
+  "glucagon": {
+    "aliases": ["glucagen"],
+    "units": ["mg"],
+    "range": [1.0, 2.0],
+    "routes": ["IM", "IN", "SC"]
+  },
+  "midazolam": {
+    "aliases": ["versed"],
+    "units": ["mg"],
+    "range": [1.0, 10.0],
+    "routes": ["IV", "IM", "IN", "IO"]
+  },
+  "fentanyl": {
+    "aliases": ["sublimaze"],
+    "units": ["mcg"],
+    "range": [25.0, 100.0],
+    "routes": ["IV", "IM", "IN", "IO"]
+  },
+  "morphine": {
+    "aliases": ["ms", "morphine sulfate"],
+    "units": ["mg"],
+    "range": [2.0, 10.0],
+    "routes": ["IV", "IM", "IO"]
+  },
+  "amiodarone": {
+    "aliases": ["cordarone"],
+    "units": ["mg"],
+    "range": [150.0, 300.0],
+    "routes": ["IV", "IO"]
+  },
+  "adenosine": {
+    "aliases": ["adenocard"],
+    "units": ["mg"],
+    "range": [6.0, 12.0],
+    "routes": ["IV", "IO"]
+  },
+  "atropine": {
+    "aliases": ["atropine sulfate"],
+    "units": ["mg"],
+    "range": [0.5, 3.0],
+    "routes": ["IV", "IO"]
+  },
+  "diphenhydramine": {
+    "aliases": ["benadryl"],
+    "units": ["mg"],
+    "range": [25.0, 50.0],
+    "routes": ["IV", "IM", "PO"]
+  }
+}

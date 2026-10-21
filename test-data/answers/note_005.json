@@ -1,0 +1,34 @@
+{
+  "medications": [
+    {
+      "time": "03:18",
+      "drug": "epinephrine",
+      "dose_value": 1.0,
+      "dose_unit": "mg",
+      "route": "IV",
+      "source_text": "epinephrine 1 mg IV push at 03:18"
+    },
+    {
+      "time": "03:22",
+      "drug": "amiodarone",
+      "dose_value": 300.0,
+      "dose_unit": "mg",
+      "route": "IV",
+      "source_text": "03:22 amiodarone 300 mg IV push given"
+    }
+  ],
+  "procedures": [
+    {
+      "time": "03:15",
+      "name": "CPR",
+      "details": "CPR initiated",
+      "source_text": "03:15 CPR initiated"
+    },
+    {
+      "time": "03:17",
+      "name": "defibrillation",
+      "details": "200 joules biphasic",
+      "source_text": "Defibrillation 200 joules biphasic delivered at 03:17"
+    }
+  ]
+}

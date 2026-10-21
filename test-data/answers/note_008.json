@@ -1,0 +1,20 @@
+{
+  "medications": [
+    {
+      "time": "15:00",
+      "drug": "diphenhydramine",
+      "dose_value": 50.0,
+      "dose_unit": "mg",
+      "route": "IM",
+      "source_text": "diphenhydramine twenty five, sorry, fifty milligrams IM at 15:00"
+    },
+    {
+      "drug": "epinephrine",
+      "dose_value": 0.3,
+      "dose_unit": "mg",
+      "route": "IM",
+      "source_text": "Epinephrine point three mg IM administered to right anterolateral thigh"
+    }
+  ],
+  "procedures": []
+}

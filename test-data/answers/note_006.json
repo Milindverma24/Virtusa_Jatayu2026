@@ -1,0 +1,27 @@
+{
+  "medications": [
+    {
+      "time": "11:45",
+      "drug": "albuterol",
+      "dose_value": 2.5,
+      "dose_unit": "mg",
+      "route": "NEB",
+      "source_text": "11:45 started albuterol two point five mg"
+    },
+    {
+      "drug": "ipratropium",
+      "dose_value": 0.5,
+      "dose_unit": "mg",
+      "route": "NEB",
+      "source_text": "atrovent point five mg via continuous nebulizer"
+    },
+    {
+      "drug": "oxygen",
+      "dose_value": 6.0,
+      "dose_unit": "L/min",
+      "route": "INH",
+      "source_text": "Oxygen therapy 6 L/min by mask"
+    }
+  ],
+  "procedures": []
+}

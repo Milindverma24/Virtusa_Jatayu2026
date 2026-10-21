@@ -1,0 +1,15 @@
+{
+  "medications": [],
+  "procedures": [
+    {
+      "time": "08:14",
+      "name": "tourniquet",
+      "details": "right thigh, bleeding controlled",
+      "source_text": "Applied tourniquet right thigh at 08:14"
+    },
+    {
+      "name": "cervical collar",
+      "source_text": "Applied cervical collar"
+    }
+  ]
+}

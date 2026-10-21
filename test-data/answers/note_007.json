@@ -1,0 +1,24 @@
+{
+  "medications": [
+    {
+      "time": "10:20",
+      "drug": "dextrose",
+      "dose_value": 25.0,
+      "dose_unit": "g",
+      "route": "IV",
+      "source_text": "10:20 infused D50 25 g IV push"
+    }
+  ],
+  "procedures": [
+    {
+      "name": "glucose check",
+      "details": "38 mg/dL",
+      "source_text": "Fingerstick glucose check showed 38 mg/dL"
+    },
+    {
+      "name": "IV access",
+      "details": "left forearm",
+      "source_text": "IV access left forearm"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "medications": [
+    {
+      "time": "09:12",
+      "drug": "epinephrine",
+      "dose_value": 0.3,
+      "dose_unit": "mg",
+      "route": "IM",
+      "source_text": "Epi 1 mg IM, sorry, point three mg IM to the thigh at 09:12"
+    }
+  ],
+  "procedures": []
+}

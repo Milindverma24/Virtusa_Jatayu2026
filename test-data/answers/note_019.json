@@ -1,0 +1,11 @@
+{
+  "medications": [],
+  "procedures": [
+    {
+      "time": "19:40",
+      "name": "cardioversion",
+      "details": "synchronized 100 joules",
+      "source_text": "Synchronized cardioversion 100 joules delivered at 19:40"
+    }
+  ]
+}

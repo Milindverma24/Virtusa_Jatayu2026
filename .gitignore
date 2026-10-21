@@ -1,0 +1,29 @@
+# Dependencies and virtual environments
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+
+# Local databases and runtime state
+*.db
+*.db-wal
+*.db-shm
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+.env
+
+# Models, media, and benchmark datasets (offline / private)
+models/
+datasets/
+whisper.cpp/
+test-data/recordings/
+
+# Build artifacts
+dist/
+.next/
+.pytest_cache/
+.ruff_cache/
+
+# OS artifacts
+.DS_Store

@@ -1,0 +1,10 @@
+{
+  "medications": [
+    {
+      "drug": "naloxone",
+      "route": "IN",
+      "source_text": "Gave narcan intranasal"
+    }
+  ],
+  "procedures": []
+}

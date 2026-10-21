@@ -1,0 +1,19 @@
+{
+  "medications": [
+    {
+      "time": "13:50",
+      "drug": "ondansetron",
+      "dose_value": 4.0,
+      "dose_unit": "mg",
+      "route": "IV",
+      "source_text": "zofran four milligrams IV push at 13:50"
+    }
+  ],
+  "procedures": [
+    {
+      "name": "IV access",
+      "details": "20G, right hand",
+      "source_text": "20G IV in right hand"
+    }
+  ]
+}

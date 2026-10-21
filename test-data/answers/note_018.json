@@ -1,0 +1,12 @@
+{
+  "medications": [
+    {
+      "time": "12:15",
+      "drug": "glucagon",
+      "dose_value": 1.0,
+      "route": "IM",
+      "source_text": "glucagon 1 IM at 12:15"
+    }
+  ],
+  "procedures": []
+}
