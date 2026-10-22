@@ -170,6 +170,7 @@ This is a research and portfolio project. It is **not a medical device**. MedGem
 - [DESIGN.md](docs/DESIGN.md): UI, UX, and data design
 - [REQUIREMENTS.md](docs/REQUIREMENTS.md): what the system must do
 - [PROMPTS.md](docs/PROMPTS.md): the exact AI prompts and rules
+- [whisper.md](whisper.md): whisper.cpp speech-to-text model specifications and offline runtime
 - [AGENT.md](AGENT.md): instructions for AI coding assistants
 
 ## Author
