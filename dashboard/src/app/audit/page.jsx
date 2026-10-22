@@ -43,7 +43,7 @@ export default async function AuditExplorerPage() {
 
       <div className="card">
         <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Audit Chain Ledger</h2>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {chronological.map((block, index) => (
             <div

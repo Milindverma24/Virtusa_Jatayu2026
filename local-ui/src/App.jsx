@@ -35,7 +35,7 @@ export default function App() {
   const [screen, setScreen] = useState('capture'); // 'capture' | 'processing' | 'review' | 'confirmed' | 'handover' | 'audit'
   const [encounterId, setEncounterId] = useState(generateEncounterId());
   const [responderId, setResponderId] = useState('Medic-07');
-  
+
   // Audio recording & Speech-to-Text
   const [isRecording, setIsRecording] = useState(false);
   const [recordSeconds, setRecordSeconds] = useState(0);
@@ -206,7 +206,7 @@ export default function App() {
         if (recognitionRef.current) {
           try {
             recognitionRef.current.stop();
-          } catch (e) {}
+          } catch (e) { }
         }
         stream.getTracks().forEach((track) => track.stop());
 
