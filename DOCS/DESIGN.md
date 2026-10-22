@@ -6,8 +6,8 @@ How Field-to-Record looks, feels, and behaves for the people using it.
 
 ## 1. Design principles
 
-1. **Busy hands, quick eyes.** A paramedic may have gloves on and a patient in front of them. Big buttons, few steps, nothing to type if they don't want to. 
-2. **Never hide uncertainty.** If the AI isn't sure, the screen shows it loudly. A flagged item is never quietly accepted.
+1. **Busy hands, quick eyes.** A paramedic may have gloves on and a patient in front of them. Big buttons, few steps, nothing to type if they don't want to.
+2. **Never hide uncertainty.** If the AI isn't sure, the screen shows it loudly. A flagged item is never quietly accepted.  
 3. **The original words are always visible.** Every extracted value links back to the exact words it came from.
 4. **The human decides.** The AI makes a draft. Only the responder can confirm it.
 5. **Works in bad conditions.** Bright sunlight, dark ambulances, shaky hands, no internet.
