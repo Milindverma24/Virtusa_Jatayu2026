@@ -9,3 +9,6 @@ pytest-asyncio>=0.23.0
 ruff>=0.3.0
 transformers>=4.49.0
 torch>=2.0.0
+pillow>=10.0.0
+reportlab>=4.0.0
+python-multipart>=0.0.9
