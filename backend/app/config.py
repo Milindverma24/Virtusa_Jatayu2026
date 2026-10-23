@@ -19,6 +19,17 @@ class Settings(BaseSettings):
     LLM_KEEP_ALIVE: str = "30m"
     LLM_SEED: int = 42
 
+    # Processing mode: "auto" uses Groq when GROQ_API_KEY is set and falls back to local
+    # Ollama / whisper on any failure; "offline" never contacts the cloud.
+    PROCESSING_MODE: str = "auto"
+
+    # Groq cloud (used only in online mode)
+    GROQ_API_KEY: str | None = None
+    GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
+    GROQ_LLM_MODEL: str = "openai/gpt-oss-120b"
+    GROQ_WHISPER_MODEL: str = "whisper-large-v3-turbo"
+    GROQ_TIMEOUT_SECONDS: float = 20.0
+
     # Prompt versioning
     ACTIVE_PROMPT_VERSION: str = "extract-v1.0"
 
@@ -55,6 +66,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        env_ignore_empty=True,  # blank values in .env fall back to the defaults above
         extra="ignore",
     )
 

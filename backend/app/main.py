@@ -12,12 +12,13 @@ import tempfile
 from typing import Any, AsyncGenerator
 import uuid
 
-from fastapi import FastAPI, File, Form, HTTPException, Response, UploadFile, status
+from fastapi import FastAPI, File, Form, Header, HTTPException, Response, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
 
+from app import cloud
 from app.clinical_ner import cross_check_extraction, extract_clinical_entities, get_mimic_embedding
 from app.config import settings
 from app.db import (
@@ -76,6 +77,10 @@ app = FastAPI(
     description="Offline voice-to-structured clinical note generator for first responders",
     version="1.0.0",
     lifespan=lifespan,
+    # Swagger lives under /api so the in-app /docs page can be served by the SPA
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json",
 )
 
 # Restrict CORS strictly to localhost origins
@@ -103,7 +108,10 @@ async def health_check() -> HealthResponse:
     db_healthy = check_db_health()
     ollama_running = False
     model_available = False
-    details: dict[str, str | bool] = {}
+    details: dict[str, str | bool] = {
+        "groq_configured": bool(settings.GROQ_API_KEY),
+        "processing_mode": settings.PROCESSING_MODE,
+    }
 
     try:
         async with httpx.AsyncClient(timeout=2.0) as http_client:
@@ -151,8 +159,12 @@ def _process_text_to_draft(
     transcribe_ms: int = 0,
     ocr_confidence: float | None = None,
     low_confidence_lines: list[str] | None = None,
+    mode: str | None = None,
 ) -> DraftResponse:
-    """Core pipeline: text -> extract -> validate -> fhir -> DraftResponse."""
+    """Core pipeline: text -> extract -> validate -> fhir -> DraftResponse.
+
+    mode is 'online' (Groq first, local fallback), 'offline' (local only) or None (server default).
+    """
     clean_text = raw_text.strip()
     if not clean_text:
         raise HTTPException(
@@ -163,17 +175,29 @@ def _process_text_to_draft(
     enc_id = encounter_id or f"ENC-{uuid.uuid4().hex[:8].upper()}"
     draft_id = f"DRF-{uuid.uuid4().hex[:8].upper()}"
 
-    # Step 1: Extraction
-    try:
-        extraction_result, extract_ms = extract_clinical_data(clean_text, client=client)
-    except (OllamaServiceError, ExtractionError) as exc:
-        logger.warning(
-            "Local LLM unavailable (%s): using zero-lag rule-based clinical extractor.",
-            type(exc).__name__,
-        )
-        fb_start = time.perf_counter()
-        extraction_result = extract_with_rules(clean_text)
-        extract_ms = max(int((time.perf_counter() - fb_start) * 1000), 1)
+    # Step 1: Extraction. Online mode tries Groq first; any failure falls back to local Ollama,
+    # and if that is unreachable too, to the rule-based extractor.
+    engine = "local"
+    extraction_result = None
+    extract_ms = 0
+    if cloud.resolve_mode(mode) == cloud.ONLINE:
+        try:
+            extraction_result, extract_ms = cloud.extract_clinical_data(clean_text)
+            engine = "groq"
+        except cloud.CloudError:
+            logger.warning("Groq extraction failed: falling back to local model.")
+    if extraction_result is None:
+        try:
+            extraction_result, extract_ms = extract_clinical_data(clean_text, client=client)
+        except (OllamaServiceError, ExtractionError) as exc:
+            logger.warning(
+                "Local LLM unavailable (%s): using zero-lag rule-based clinical extractor.",
+                type(exc).__name__,
+            )
+            fb_start = time.perf_counter()
+            extraction_result = extract_with_rules(clean_text)
+            extract_ms = max(int((time.perf_counter() - fb_start) * 1000), 1)
+            engine = "rules"
 
     # Step 2: Validation
     v_start = time.perf_counter()
@@ -197,8 +221,17 @@ def _process_text_to_draft(
             )
         )
 
-    # Step 5: Generate professional clinical summary using Ollama
-    clinical_summary = generate_clinical_summary(clean_text, client=client)
+    # Step 5: Clinical summary from the same engine that did the extraction
+    clinical_summary = ""
+    if engine == "groq":
+        try:
+            clinical_summary = cloud.generate_clinical_summary(clean_text)
+        except cloud.CloudError:
+            clinical_summary = ""
+    if not clinical_summary and engine != "rules":
+        clinical_summary = generate_clinical_summary(clean_text, client=client)
+    elif not clinical_summary:
+        clinical_summary = f"Clinical encounter documented: {clean_text}"
     if clinical_summary:
         bundle["summary"] = clinical_summary
 
@@ -231,7 +264,11 @@ def _process_text_to_draft(
         bundle=bundle,
         flags=flag_items,
         model=ModelInfo(
-            name=settings.LLM_MODEL,
+            name=(
+                f"groq/{settings.GROQ_LLM_MODEL}" if engine == "groq"
+                else "rule-based" if engine == "rules"
+                else settings.LLM_MODEL
+            ),
             prompt_version=settings.ACTIVE_PROMPT_VERSION,
         ),
         timings_ms=TimingsMs(
@@ -249,9 +286,12 @@ def _process_text_to_draft(
     response_model=DraftResponse,
     summary="Process typed text into a structured draft record",
 )
-async def draft_from_text(payload: DraftRequest) -> DraftResponse:
+async def draft_from_text(
+    payload: DraftRequest,
+    x_processing_mode: str | None = Header(None),
+) -> DraftResponse:
     """Ingests typed clinical text note and returns structured FHIR-lite draft with flags."""
-    return _process_text_to_draft(payload.text, payload.encounter_id, input_type="text")
+    return _process_text_to_draft(payload.text, payload.encounter_id, input_type="text", mode=x_processing_mode)
 
 
 @app.post(
@@ -262,6 +302,7 @@ async def draft_from_text(payload: DraftRequest) -> DraftResponse:
 async def draft_from_voice(
     file: UploadFile = File(...),
     encounter_id: str | None = Form(None),
+    x_processing_mode: str | None = Header(None),
 ) -> DraftResponse:
     """Transcribes audio file with whisper.cpp and runs extraction pipeline."""
     suffix = Path(file.filename).suffix if file.filename else ".wav"
@@ -280,19 +321,28 @@ async def draft_from_voice(
             )
         Path(temp_path).write_bytes(content)
 
-        try:
-            raw_text, transcribe_ms = transcribe_audio(temp_path)
-        except TranscriptionError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"Speech transcription failed: {exc}",
-            ) from exc
+        raw_text = None
+        transcribe_ms = 0
+        if cloud.resolve_mode(x_processing_mode) == cloud.ONLINE:
+            try:
+                raw_text, transcribe_ms = cloud.transcribe_audio(temp_path)
+            except cloud.CloudError:
+                logger.warning("Groq transcription failed: falling back to local whisper.")
+        if raw_text is None:
+            try:
+                raw_text, transcribe_ms = transcribe_audio(temp_path)
+            except TranscriptionError as exc:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail=f"Speech transcription failed: {exc}",
+                ) from exc
 
         return _process_text_to_draft(
             raw_text=raw_text,
             encounter_id=encounter_id,
             input_type="voice",
             transcribe_ms=transcribe_ms,
+            mode=x_processing_mode,
         )
     finally:
         # Crucial requirement: Delete temp files after processing
@@ -311,6 +361,7 @@ async def draft_from_voice(
 async def draft_from_image(
     file: UploadFile = File(...),
     encounter_id: str | None = Form(None),
+    x_processing_mode: str | None = Header(None),
 ) -> DraftResponse:
     """Performs offline OCR on image file and runs extraction pipeline."""
     suffix = Path(file.filename).suffix if file.filename else ".png"
@@ -344,6 +395,7 @@ async def draft_from_image(
             transcribe_ms=ocr_ms,
             ocr_confidence=ocr_conf,
             low_confidence_lines=low_conf_lines,
+            mode=x_processing_mode,
         )
     finally:
         # Crucial requirement: Delete temp files after processing
@@ -359,9 +411,12 @@ async def draft_from_image(
     response_model=DraftResponse,
     summary="Re-extract draft from edited note text",
 )
-async def reextract_from_text(payload: DraftRequest) -> DraftResponse:
+async def reextract_from_text(
+    payload: DraftRequest,
+    x_processing_mode: str | None = Header(None),
+) -> DraftResponse:
     """Re-runs the extraction and validation pipeline on edited raw text."""
-    return _process_text_to_draft(payload.text, payload.encounter_id, input_type="text")
+    return _process_text_to_draft(payload.text, payload.encounter_id, input_type="text", mode=x_processing_mode)
 
 
 @app.post(

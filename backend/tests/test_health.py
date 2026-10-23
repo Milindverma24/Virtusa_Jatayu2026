@@ -12,7 +12,11 @@ from app.main import app
 def test_config_defaults() -> None:
     """Settings should load sensible offline defaults."""
     assert settings.HOST == "127.0.0.1"
-    assert settings.LLM_MODEL == "minimax-m3.1-flash:cloud"
+    # Defaults come from the Settings class, not from a developer's local .env
+    from app.config import Settings
+
+    defaults = Settings(_env_file=None)
+    assert defaults.LLM_MODEL == "qwen3:8b"
     assert settings.LLM_TEMPERATURE == 0.0
     assert settings.ACTIVE_PROMPT_VERSION == "extract-v1.0"
     assert settings.PROMPTS_DIR.exists()

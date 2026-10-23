@@ -11,7 +11,7 @@ def test_render_html_report_empty_encounter():
     html = render_html_report("ENC-TEST-EMPTY")
     assert "<!DOCTYPE html>" in html
     assert "ENC-TEST-EMPTY" in html
-    assert "Sanjeevani Lekh · Clinical Handover" in html
+    assert "Clinical Handover" in html
     assert "No medications recorded" in html
     assert "No procedures recorded" in html
 

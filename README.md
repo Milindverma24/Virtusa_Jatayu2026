@@ -98,9 +98,18 @@ python scripts/download_models.py # caches Whisper, n2c2 NER, and MIMIC-III mode
 uvicorn app.main:app --port 8000
 ```
 
-Open **http://localhost:8000/docs** to test the API, or **http://localhost:8000** for the UI.
+Open **http://localhost:8000/api/docs** to test the API, or **http://localhost:8000** for the UI (documentation page at `/docs`).
 
 To prove it works offline, turn off Wi-Fi and run a test note.
+
+## Online and offline modes
+
+The field app has an ONLINE / OFFLINE switch in its top bar.
+
+- **Online:** notes and recorded audio are processed by [Groq](https://console.groq.com) (a chat model for extraction and the summary, hosted Whisper for audio). If the call fails for any reason, the backend falls back to the local models.
+- **Offline:** everything stays on the device (local Ollama and whisper).
+
+Configure both in `backend/.env` (copy `backend/.env.example`): set `GROQ_API_KEY` for online mode, and `OLLAMA_BASE_URL` / `LLM_MODEL` for the local model. Without a Groq key the backend always runs offline, and `PROCESSING_MODE=offline` makes offline the default. Online mode sends note text and audio to a third-party service, so use only synthetic data with it. Photos are always read locally.
 
 ## Clinical Models Integration (n2c2 & MIMIC-III)
 

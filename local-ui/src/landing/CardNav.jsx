@@ -7,10 +7,10 @@ import './CardNav.css';
 const THEMES = {
   dark: {
     '--cn-panel': 'rgba(6, 16, 15, 0.72)',
-    '--cn-solid': '#0B0F17',
+    '--cn-solid': '#0A1614',
     '--cn-edge': 'rgba(255, 255, 255, 0.08)',
     '--cn-highlight': 'rgba(255, 255, 255, 0.12)',
-    '--cn-shadow': '0 20px 48px -10px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.08)',
+    '--cn-shadow': '0 10px 28px -14px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.08)',
     '--cn-text': '#E4F1EC',
     '--cn-muted': 'rgba(232, 237, 244, 0.55)',
     '--cn-hover': 'rgba(255, 255, 255, 0.08)',

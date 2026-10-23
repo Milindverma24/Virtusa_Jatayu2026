@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Lenis from 'lenis';
-import CardNav from './CardNav';
 import HeroSection, { TickerStrip } from './HeroSection';
 import ModesSection from './ModesSection';
 import TimelineSection from './TimelineSection';
 import SyncSection from './SyncSection';
 import TamperDemoSection from './TamperDemoSection';
 import LaunchSection from './LaunchSection';
-import { Activity } from 'lucide-react';
-import { NAV_ITEMS } from '../navItems';
+import Logo from '../components/Logo';
 import { NetContext, prefersReducedMotion } from './lpUtils';
 import './landing.css';
 
@@ -87,30 +85,6 @@ export default function LandingPage({ onOpenApp, onOpenDocs }) {
     return () => { cancelAnimationFrame(raf); window.removeEventListener('pointermove', onMove); document.removeEventListener('pointerout', onOut); };
   }, []);
 
-  const logoElement = (
-    <div className="card-nav-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} title="Sanjeevani Lekh - Return to top">
-      <div className="card-nav-brand-icon"><Activity size={16} strokeWidth={2.4} /></div>
-      <span className="card-nav-brand-text">Sanjeevani Lekh</span>
-    </div>
-  );
-
-  const handleLinkClick = (link, item, event) => {
-    if (link.onClick) { event.preventDefault(); link.onClick(event); return; }
-    if (link.href && (link.href.startsWith('#') || link.href.startsWith('/#'))) {
-      event.preventDefault();
-      const id = link.href.includes('#') ? link.href.split('#')[1] : '';
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-      else window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (link.href && link.href.startsWith('/docs')) {
-      event.preventDefault();
-      if (onOpenDocs) onOpenDocs(); else window.location.href = '/docs';
-    } else if (link.href && link.href.startsWith('/app')) {
-      event.preventDefault();
-      if (onOpenApp) onOpenApp(link.href); else window.location.href = link.href;
-    }
-  };
-
   const onAnchor = (e) => {
     const a = e.target.closest && e.target.closest('a[href^="#"]');
     if (!a) return;
@@ -124,39 +98,34 @@ export default function LandingPage({ onOpenApp, onOpenDocs }) {
         <div className="lp-bar" ref={barRef} aria-hidden="true" />
         <div className="lp-cur" ref={curRef} aria-hidden="true" />
 
-        <header className="card-nav-container">
-          <CardNav
-            logo={logoElement}
-            logoAlt="Sanjeevani Lekh"
-            logoHref="#"
-            items={NAV_ITEMS}
-            cta={{ label: 'Open the app', onClick: onOpenApp }}
-            docsHref="/docs"
-            onDocsClick={onOpenDocs}
-            githubHref="https://github.com/Milindverma24/Virtusa_Jatayu2026"
-            cardEffect="rise"
-            openOn="click"
-            theme="dark"
-            surface="glass"
-            maxWidth="100%"
-            cardHeight={140}
-            onLinkClick={handleLinkClick}
-          />
-        </header>
-
-        <button
-          type="button"
-          className="net"
-          role="switch"
-          aria-checked={online}
-          aria-label="Simulate network connection"
-          data-cur
-          onClick={() => setOnline((v) => !v)}
-        >
-          <span className="led" />
-          <span>{online ? 'ONLINE' : 'OFFLINE'}</span>
-          <span className="sw" />
-        </button>
+        <nav className="top" aria-label="Site">
+          <div className="wrap top-in">
+            <a className="brand" href="#hero" aria-label="Sanjeevani Lekh, back to top">
+              <Logo size={30} />
+              <b>संजीवनी लेख</b>
+              <span>SANJEEVANI LEKH</span>
+            </a>
+            <div className="links">
+              <a href="#how-it-works">How it works</a>
+              <button type="button" onClick={() => onOpenApp && onOpenApp('/app')}>Field app</button>
+              <a href="#tamper-demo">Tamper proof</a>
+              <button type="button" onClick={() => onOpenDocs && onOpenDocs()}>Documentation</button>
+            </div>
+            <button
+              type="button"
+              className="net"
+              role="switch"
+              aria-checked={online}
+              aria-label="Simulate network connection"
+              data-cur
+              onClick={() => setOnline((v) => !v)}
+            >
+              <span className="led" />
+              <span>{online ? 'ONLINE' : 'OFFLINE'}</span>
+              <span className="sw" />
+            </button>
+          </div>
+        </nav>
 
         <HeroSection onOpenApp={onOpenApp} />
         <TickerStrip />

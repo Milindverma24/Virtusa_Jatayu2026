@@ -45,9 +45,8 @@ import {
   EmptyState,
   AudioWaveform
 } from './components/UI';
-import CardNav from './landing/CardNav';
-import { NAV_ITEMS } from './navItems';
-import './app-premium.css';
+import Logo from './components/Logo';
+import './app.css';
 
 function generateEncounterId() {
   const chars = '0123456789ABCDEF';
@@ -95,6 +94,16 @@ export default function App({ onBackToLanding, onOpenDocs }) {
 
   const [encounterId, setEncounterId] = useState(generateEncounterId());
   const [responderId, setResponderId] = useState('Paramedic-07');
+
+  // Online mode sends notes and audio to Groq (server falls back to the local model on failure).
+  // Offline mode keeps everything on the device.
+  const [online, setOnline] = useState(() => {
+    try { return localStorage.getItem('sanjeevani_mode') !== 'offline'; } catch (e) { return true; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem('sanjeevani_mode', online ? 'online' : 'offline'); } catch (e) { /* storage unavailable */ }
+  }, [online]);
+  const modeHeader = { 'X-Processing-Mode': online ? 'online' : 'offline' };
   const [copiedEncounter, setCopiedEncounter] = useState(false);
   const [copiedHash, setCopiedHash] = useState(false);
 
@@ -337,7 +346,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
     try {
       const res = await fetch('/draft/text', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...modeHeader },
         body: JSON.stringify({
           text: textToProcess,
           encounter_id: encounterId,
@@ -384,6 +393,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
     try {
       const res = await fetch('/draft/voice', {
         method: 'POST',
+        headers: modeHeader,
         body: formData,
       });
 
@@ -426,7 +436,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
     try {
       const res = await fetch('/draft/text', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...modeHeader },
         body: JSON.stringify({
           text: typeText,
           encounter_id: encounterId,
@@ -477,6 +487,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
     try {
       const res = await fetch('/draft/image', {
         method: 'POST',
+        headers: modeHeader,
         body: formData,
       });
 
@@ -605,106 +616,61 @@ export default function App({ onBackToLanding, onOpenDocs }) {
   };
 
   return (
-    <div className="app-wrapper">
-      {/* Universal Full-Width Glassy CardNav Navigation */}
-      <header className="card-nav-container">
-        <CardNav
-          logo={
-            <div
-              className="card-nav-brand"
-              onClick={onBackToLanding}
-              title="Sanjeevani Lekh - Return to Landing Page"
-            >
-              <div className="card-nav-brand-icon">
-                <Activity size={16} strokeWidth={2.4} />
-              </div>
-              <span className="card-nav-brand-text">Sanjeevani Lekh</span>
-            </div>
-          }
-          logoAlt="Sanjeevani Lekh"
-          logoHref="#"
-          items={NAV_ITEMS}
-          cta={{ label: '← Landing Page', onClick: onBackToLanding }}
-          docsHref="/docs"
-          onDocsClick={onOpenDocs}
-          githubHref="https://github.com/Milindverma24/Virtusa_Jatayu2026"
-          cardEffect="rise"
-          openOn="click"
-          theme={theme === 'light' ? 'light' : 'dark'}
-          surface="glass"
-          maxWidth="100%"
-          cardHeight={140}
-          onLinkClick={handleCardNavLinkClick}
-        />
-      </header>
-
-      {/* 2. Floating Tactile Segmented Navigation Deck */}
-      <div className="floating-nav-deck">
-        <nav className="tactile-nav-track" role="tablist" aria-label="Main navigation">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={screen === 'capture'}
-            className={`tactile-nav-item ${screen === 'capture' ? 'active' : ''}`}
-            onClick={() => setScreen('capture')}
-          >
-            <Mic size={15} strokeWidth={2.2} />
-            <span>Capture</span>
+    <div className="app-wrapper app-paper">
+      <nav className="app-top" aria-label="Field app">
+        <div className="app-top-in">
+          <button type="button" className="app-brand" onClick={onBackToLanding} title="Back to the home page">
+            <Logo size={30} />
+            <b>संजीवनी लेख</b>
+            <span>SANJEEVANI LEKH</span>
           </button>
 
-          {draft && (
+          <div className="app-tabs" role="tablist" aria-label="Screens">
+            <button type="button" role="tab" aria-selected={screen === 'capture'} className={`app-tab ${screen === 'capture' ? 'active' : ''}`} onClick={() => setScreen('capture')}>
+              Capture
+            </button>
+            {draft && (
+              <button type="button" role="tab" aria-selected={screen === 'review'} className={`app-tab ${screen === 'review' ? 'active' : ''}`} onClick={() => setScreen('review')}>
+                Review
+                {unresolvedFlagsCount > 0 && <span className="app-tab-count">{unresolvedFlagsCount}</span>}
+              </button>
+            )}
+            <button type="button" role="tab" aria-selected={screen === 'handover'} className={`app-tab ${screen === 'handover' ? 'active' : ''}`} onClick={() => setScreen('handover')}>
+              Handover
+            </button>
             <button
               type="button"
               role="tab"
-              aria-selected={screen === 'review'}
-              className={`tactile-nav-item ${screen === 'review' ? 'active' : ''}`}
-              onClick={() => setScreen('review')}
+              aria-selected={screen === 'audit'}
+              className={`app-tab ${screen === 'audit' ? 'active' : ''}`}
+              onClick={() => { setScreen('audit'); runAuditVerification(); }}
             >
-              <AlertTriangle size={15} strokeWidth={2.2} />
-              <span>Review Draft</span>
-              {unresolvedFlagsCount > 0 && (
-                <span className="nav-alert-dot">{unresolvedFlagsCount}</span>
-              )}
+              Ledger
             </button>
-          )}
+            <button type="button" role="tab" aria-selected={screen === 'docs'} className={`app-tab ${screen === 'docs' ? 'active' : ''}`} onClick={() => setScreen('docs')}>
+              Specs
+            </button>
+          </div>
 
-          <button
-            type="button"
-            role="tab"
-            aria-selected={screen === 'handover'}
-            className={`tactile-nav-item ${screen === 'handover' ? 'active' : ''}`}
-            onClick={() => setScreen('handover')}
-          >
-            <FileText size={15} strokeWidth={2.2} />
-            <span>Handover ePCR</span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={screen === 'audit'}
-            className={`tactile-nav-item ${screen === 'audit' ? 'active' : ''}`}
-            onClick={() => {
-              setScreen('audit');
-              runAuditVerification();
-            }}
-          >
-            <ShieldCheck size={15} strokeWidth={2.2} />
-            <span>Hash Ledger</span>
-          </button>
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={screen === 'docs'}
-            className={`tactile-nav-item ${screen === 'docs' ? 'active' : ''}`}
-            onClick={() => setScreen('docs')}
-          >
-            <BookOpen size={15} strokeWidth={2.2} />
-            <span>System Specs</span>
-          </button>
-        </nav>
-      </div>
+          <div className="app-top-right">
+            <button
+              type="button"
+              className="app-net"
+              role="switch"
+              aria-checked={online}
+              aria-label="Processing mode: online uses Groq in the cloud, offline keeps everything on this device"
+              title={online ? 'Online: notes and audio are processed by Groq, with a local fallback' : 'Offline: everything stays on this device'}
+              onClick={() => setOnline((v) => !v)}
+            >
+              <span className="app-net-led" />
+              <span>{online ? 'ONLINE' : 'OFFLINE'}</span>
+              <span className="app-net-sw" />
+            </button>
+            <button type="button" className="app-link" onClick={onOpenDocs}>Documentation</button>
+            <button type="button" className="app-link" onClick={onBackToLanding}>Home</button>
+          </div>
+        </div>
+      </nav>
 
       {/* 3. Main Body */}
       <main className="main-content">
@@ -720,7 +686,9 @@ export default function App({ onBackToLanding, onOpenDocs }) {
               </h1>
               <p className="capture-lead-sub">
                 Speak naturally, type a quick observation, or scan handwritten glove notes.
-                Converted on-device into structured FHIR records sealed with SHA-256.
+                {online
+                  ? 'Processed by Groq, with a local fallback, then sealed as a SHA-256 record. Switch to Offline to keep everything on this device.'
+                  : 'Processed on this device only, then sealed as a SHA-256 record.'}
               </p>
             </div>
 
@@ -746,10 +714,6 @@ export default function App({ onBackToLanding, onOpenDocs }) {
 
             {/* Centerpiece: Biometric Audio Reactor Orb */}
             <div className={`orb-stage-wrapper ${isRecording ? 'recording' : ''}`}>
-              <div className="orb-ambient-glow" />
-              <div className="orb-telemetry-ring" />
-              <div className="orb-ripple" />
-
               <button
                 type="button"
                 className={`biometric-orb-btn ${isRecording ? 'recording' : ''}`}
@@ -880,7 +844,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
               >
                 <div>
                   <div className="deck-card-head">
-                    <div className="deck-icon-badge" style={{ background: 'rgba(127, 176, 255, 0.12)', borderColor: 'rgba(127, 176, 255, 0.25)', color: 'var(--accent)' }}>
+                    <div className="deck-icon-badge">
                       <Camera size={22} strokeWidth={2} />
                     </div>
                     <div>
@@ -892,7 +856,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
                   </div>
 
                   <div className="preset-chips-cluster">
-                    <span className="preset-chip" style={{ color: 'var(--accent)', borderColor: 'rgba(127, 176, 255, 0.3)' }}>
+                    <span className="preset-chip">
                       <ShieldCheck size={11} />
                       <span>On-Device TrOCR</span>
                     </span>
@@ -978,7 +942,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
           <div className="stepper-container" aria-live="polite">
             <div className="stepper-card" style={{ maxWidth: 540 }}>
               <div className="stepper-header">
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(75, 242, 162, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
+                <div className="stepper-icon">
                   <Activity size={22} className="hero-badge-pulse" />
                 </div>
                 <div>
@@ -1055,18 +1019,21 @@ export default function App({ onBackToLanding, onOpenDocs }) {
                   <Badge variant="neutral" size="sm">Ground Truth</Badge>
                 </div>
 
-                <div style={{ background: 'rgba(9, 13, 20, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 14, padding: 18, fontSize: 15, lineHeight: 1.65, color: '#FFFFFF' }}>
+                <div className="source-box">
                   "{draft.raw_text}"
                 </div>
+                {draft.model?.name && (
+                  <div className="engine-line mono">
+                    Processed by {draft.model.name.startsWith('groq/') ? 'Groq (cloud)' : draft.model.name === 'rule-based' ? 'built-in rules (no model reachable)' : `${draft.model.name} (this device)`}
+                  </div>
+                )}
 
                 {draft.summary && (
-                  <div style={{ marginTop: 16, padding: 16, borderRadius: 12, background: 'rgba(75, 242, 162, 0.08)', border: '1px solid rgba(75, 242, 162, 0.25)' }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Sparkles size={14} /> AI Clinical Summary
+                  <div className="summary-box">
+                    <div className="summary-label">
+                      <Sparkles size={13} /> AI clinical summary
                     </div>
-                    <div style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--text)' }}>
-                      {draft.summary}
-                    </div>
+                    <div className="summary-text">{draft.summary}</div>
                   </div>
                 )}
 
@@ -1138,21 +1105,9 @@ export default function App({ onBackToLanding, onOpenDocs }) {
                           )}
 
                           {item.type === 'medication' && item.indication && (
-                            <div style={{
-                              marginTop: 8,
-                              padding: '6px 12px',
-                              background: 'rgba(75, 242, 162, 0.08)',
-                              border: '1px solid rgba(75, 242, 162, 0.25)',
-                              borderRadius: 8,
-                              fontSize: 12.5,
-                              color: 'var(--primary)',
-                              lineHeight: 1.4,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 6
-                            }}>
+                            <div className="indication-chip">
                               <Pill size={12} />
-                              <span>Clinical Indication: <strong>{item.indication}</strong></span>
+                              <span>Indication: <strong>{item.indication}</strong></span>
                             </div>
                           )}
 
@@ -1249,17 +1204,8 @@ export default function App({ onBackToLanding, onOpenDocs }) {
             =================================================================== */}
         {screen === 'confirmed' && confirmedResult && (
           <div style={{ maxWidth: 640, margin: '40px auto', textAlign: 'center', padding: '0 24px' }}>
-            <div style={{
-              display: 'inline-flex',
-              padding: 22,
-              borderRadius: '50%',
-              background: 'rgba(75, 242, 162, 0.15)',
-              border: '2px solid rgba(75, 242, 162, 0.4)',
-              color: 'var(--success)',
-              marginBottom: 20,
-              boxShadow: '0 0 36px rgba(75, 242, 162, 0.3)'
-            }}>
-              <CheckCircle2 size={54} strokeWidth={2.2} />
+            <div className="confirmed-check">
+              <CheckCircle2 size={40} strokeWidth={1.8} />
             </div>
             <div style={{ height: 0, position: 'relative', pointerEvents: 'none' }} aria-hidden="true">
               <span className="seal-stamp">Sealed</span>
@@ -1272,7 +1218,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
               Appended permanently to the tamper-evident SHA-256 SQLite hash chain
             </p>
 
-            <div style={{ background: 'rgba(14, 20, 31, 0.85)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: 20, padding: 24, textAlign: 'left', marginTop: 28, boxShadow: '0 20px 48px -12px rgba(0, 0, 0, 0.7)' }}>
+            <div className="confirmed-card">
               <div style={{ marginBottom: 16 }}>
                 <span className="section-label" style={{ marginBottom: 4 }}>ENCOUNTER ID</span>
                 <div className="mono" style={{ fontSize: 18, fontWeight: 700, color: 'var(--primary)' }}>
@@ -1516,32 +1462,32 @@ export default function App({ onBackToLanding, onOpenDocs }) {
                 <Layers size={19} /> The Complete Process In Short (6 Steps)
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
-                <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div className="step-tile">
                   <div className="mono" style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 700 }}>STEP 1 · CAPTURE</div>
                   <div style={{ fontWeight: 600, fontSize: 14, marginTop: 4 }}>Voice, Type, or Photo</div>
                   <div style={{ fontSize: 12.5, color: 'var(--text-muted)', marginTop: 4 }}>Audio recorded via MediaRecorder or picture uploaded.</div>
                 </div>
-                <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div className="step-tile">
                   <div className="mono" style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 700 }}>STEP 2 · TRANSCRIBE</div>
                   <div style={{ fontWeight: 600, fontSize: 14, marginTop: 4 }}>Whisper & TrOCR</div>
                   <div style={{ fontSize: 12.5, color: 'var(--text-muted)', marginTop: 4 }}>Voice to text or glove handwriting to text locally.</div>
                 </div>
-                <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div className="step-tile">
                   <div className="mono" style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 700 }}>STEP 3 · EXTRACT</div>
                   <div style={{ fontWeight: 600, fontSize: 14, marginTop: 4 }}>Ollama & MedGemma</div>
                   <div style={{ fontSize: 12.5, color: 'var(--text-muted)', marginTop: 4 }}>Local LLM picks out drug, dose, route, and time into FHIR.</div>
                 </div>
-                <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div className="step-tile">
                   <div className="mono" style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 700 }}>STEP 4 · CROSS-CHECK</div>
                   <div style={{ fontWeight: 600, fontSize: 14, marginTop: 4 }}>n2c2 BERT & Bio_ClinicalBERT</div>
                   <div style={{ fontSize: 12.5, color: 'var(--text-muted)', marginTop: 4 }}>Detects omitted treatments and computes MIMIC embeddings.</div>
                 </div>
-                <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div className="step-tile">
                   <div className="mono" style={{ fontSize: 11, color: 'var(--warning)', fontWeight: 700 }}>STEP 5 · CONFIRM</div>
                   <div style={{ fontWeight: 600, fontSize: 14, marginTop: 4 }}>Human-In-The-Loop</div>
                   <div style={{ fontSize: 12.5, color: 'var(--text-muted)', marginTop: 4 }}>Paramedic signs off and accepts any loud amber flags.</div>
                 </div>
-                <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: 14, borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div className="step-tile">
                   <div className="mono" style={{ fontSize: 11, color: 'var(--success)', fontWeight: 700 }}>STEP 6 · SEAL</div>
                   <div style={{ fontWeight: 600, fontSize: 14, marginTop: 4 }}>SHA-256 Hash Chain</div>
                   <div style={{ fontSize: 12.5, color: 'var(--text-muted)', marginTop: 4 }}>Appended to SQLite blockchain ledger, impossible to modify.</div>
@@ -1565,7 +1511,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
       {showTypeModal && (
         <div className="high-tech-modal-overlay">
           <div className="high-tech-modal-card">
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF' }}>Type Clinical Field Note</h3>
+            <h3 style={{ fontSize: 22, fontWeight: 500, letterSpacing: '-0.02em' }}>Type clinical field note</h3>
             <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: 4 }}>
               Enter verbatim paramedic on-scene medications, routes, dosages, and procedures.
             </p>

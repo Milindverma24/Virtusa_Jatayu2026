@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sanjeevani Lekh diagrams</title>
+<style>
+  body { margin: 0; background: #fff; font-family: "Segoe UI", Arial, sans-serif; }
+  svg { display: block; background: #fff; }
+  .d { margin: 0 0 40px; }
+</style>
+</head>
+<body>
+<div id="out"></div>
+<script>
+const C = {
+  ink: '#0C1B22', paper: '#F3F6F5', herb: '#0E7A5C', herbBg: '#E0F0EA', amber: '#A96400', amberBg: '#FCEFD6',
+  blue: '#2A63D6', blueBg: '#E5EDFB', red: '#CC3238', redBg: '#FBE6E7', grey: '#5B6B71', line: '#8FA0A6', mon: '#06100F', monText: '#E4F1EC', phos: '#4BF2A2'
+};
+const NS = 'http://www.w3.org/2000/svg';
+
+function makeSvg(id, w, h) {
+  const s = document.createElementNS(NS, 'svg');
+  s.setAttribute('id', id); s.setAttribute('width', w); s.setAttribute('height', h); s.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  s.classList.add('d');
+  s.innerHTML = `<defs>
+    <marker id="${id}-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.ink}"/></marker>
+    <marker id="${id}-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.herb}"/></marker>
+    <marker id="${id}-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.amber}"/></marker>
+  </defs>`;
+  document.getElementById('out').appendChild(s);
+  return s;
+}
+function add(svg, html) { svg.insertAdjacentHTML('beforeend', html); }
+function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+// text lines centered in a box
+function text(svg, x, y, lines, o = {}) {
+  const size = o.size || 15, lh = o.lh || size * 1.3, anchor = o.anchor || 'middle', weight = o.weight || 400, fill = o.fill || C.ink, fam = o.mono ? 'Consolas, "Courier New", monospace' : '"Segoe UI", Arial, sans-serif';
+  const arr = Array.isArray(lines) ? lines : [lines];
+  const startY = y - ((arr.length - 1) * lh) / 2;
+  arr.forEach((l, i) => add(svg, `<text x="${x}" y="${startY + i * lh}" text-anchor="${anchor}" dominant-baseline="central" font-family='${fam}' font-size="${size}" font-weight="${(i === 0 && o.boldFirst) ? 700 : weight}" fill="${fill}">${esc(l)}</text>`));
+}
+const KINDS = {
+  plain: { fill: '#fff', stroke: C.ink, text: C.ink },
+  herb: { fill: C.herbBg, stroke: C.herb, text: C.ink },
+  blue: { fill: C.blueBg, stroke: C.blue, text: C.ink },
+  amber: { fill: C.amberBg, stroke: C.amber, text: C.ink },
+  red: { fill: C.redBg, stroke: C.red, text: C.ink },
+  dark: { fill: C.mon, stroke: C.mon, text: C.monText },
+  ghost: { fill: C.paper, stroke: C.line, text: C.ink },
+};
+function box(svg, x, y, w, h, lines, kind = 'plain', o = {}) {
+  const k = KINDS[kind];
+  add(svg, `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${o.r ?? 10}" fill="${k.fill}" stroke="${k.stroke}" stroke-width="${o.sw || 1.6}" ${o.dash ? 'stroke-dasharray="6 5"' : ''}/>`);
+  if (lines) text(svg, x + w / 2, y + h / 2, lines, { fill: k.text, size: o.size, boldFirst: o.boldFirst ?? true, mono: o.mono, lh: o.lh });
+}
+function zone(svg, x, y, w, h, title, o = {}) {
+  add(svg, `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="${o.fill || C.paper}" stroke="${o.stroke || C.line}" stroke-width="1.5" stroke-dasharray="${o.dash === false ? '0' : '8 6'}"/>`);
+  add(svg, `<text x="${x + 18}" y="${y + 26}" font-family='"Segoe UI", Arial' font-size="14" font-weight="700" letter-spacing="1.2" fill="${o.titleFill || C.grey}">${esc(title.toUpperCase())}</text>`);
+}
+function arrow(svg, pts, o = {}) {
+  const id = svg.getAttribute('id');
+  const col = o.color || C.ink, mk = col === C.herb ? 'g' : col === C.amber ? 'd' : 'a';
+  const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ');
+  add(svg, `<path d="${d}" fill="none" stroke="${col}" stroke-width="${o.w || 1.8}" ${o.dash ? 'stroke-dasharray="7 5"' : ''} marker-end="url(#${id}-${mk})" ${o.both ? `marker-start="url(#${id}-${mk})"` : ''}/>`);
+  if (o.label) {
+    const mid = pts[Math.floor((pts.length - 1) / 2)], nx = pts[Math.floor((pts.length - 1) / 2) + 1];
+    const lx = (mid[0] + nx[0]) / 2 + (o.lx || 0), ly = (mid[1] + nx[1]) / 2 + (o.ly || -10);
+    const lines = Array.isArray(o.label) ? o.label : [o.label];
+    const wlab = Math.max(...lines.map(l => l.length)) * 6.6 + 12;
+    add(svg, `<rect x="${lx - wlab / 2}" y="${ly - lines.length * 8.5 - 2}" width="${wlab}" height="${lines.length * 17 + 4}" fill="#fff" opacity="0.92"/>`);
+    text(svg, lx, ly - (lines.length - 1) * 8.5 + (lines.length - 1) * 8.5 - 2 + 0, lines, { size: 12, fill: o.lcolor || C.grey, lh: 15 });
+  }
+}
+function title(svg, t, sub, w) {
+  add(svg, `<text x="40" y="44" font-family='"Segoe UI", Arial' font-size="26" font-weight="700" fill="${C.ink}">${esc(t)}</text>`);
+  add(svg, `<text x="40" y="70" font-family='"Segoe UI", Arial' font-size="14" fill="${C.grey}">${esc(sub)}</text>`);
+}
+
+/* =========================== 1. SYSTEM ARCHITECTURE =========================== */
+(function () {
+  const s = makeSvg('d1', 1600, 980);
+  title(s, 'System architecture', 'Everything left of the dashed divider runs on the responder\'s device. The cloud parts are optional.', 1600);
+
+  zone(s, 30, 96, 1060, 850, 'Responder device');
+  zone(s, 1130, 96, 440, 850, 'Cloud (optional)', { fill: '#FAFBFB' });
+
+  // UI
+  box(s, 60, 140, 1000, 110, null, 'ghost', { dash: true });
+  add(s, `<text x="78" y="164" font-family='"Segoe UI"' font-size="13" font-weight="700" letter-spacing="1" fill="${C.grey}">BROWSER  |  REACT + VITE  (served by the backend from local-ui/dist)</text>`);
+  box(s, 80, 180, 280, 58, ['Landing page', 'story, offline demo, tamper demo'], 'blue', { size: 13 });
+  box(s, 390, 180, 320, 58, ['Field app  /app', 'capture, review, confirm, ledger, handover'], 'blue', { size: 13 });
+  box(s, 740, 180, 300, 58, ['Documentation  /docs', 'ONLINE / OFFLINE switch in the app bar'], 'blue', { size: 13 });
+
+  // Backend
+  box(s, 60, 300, 1000, 330, null, 'ghost', { dash: true });
+  add(s, `<text x="78" y="324" font-family='"Segoe UI"' font-size="13" font-weight="700" letter-spacing="1" fill="${C.grey}">FASTAPI BACKEND  |  PYTHON  (backend/app)</text>`);
+  box(s, 80, 346, 960, 52, ['main.py: routes + pipeline', '/draft/text  /draft/voice  /draft/image  /confirm  /correct  /audit/verify  /encounters  /sync  /clinical-ner'], 'dark', { size: 13 });
+  const mods = [
+    ['transcribe.py', 'voice to text'], ['ocr.py', 'photo to text'], ['extract.py', 'LLM extraction'], ['rule_extractor.py', 'fallback rules'], ['cloud.py', 'Groq client'],
+    ['validate.py', '10 safety rules'], ['normalise.py', 'drug names, units'], ['fhir.py', 'FHIR-lite bundle'], ['clinical_ner.py', 'cross-check'], ['report.py', 'HTML + PDF'],
+    ['db.py', 'hash-chained log'], ['sync.py', 'push to Supabase'],
+  ];
+  mods.forEach((m, i) => {
+    const col = i % 5, row = Math.floor(i / 5);
+    const kind = m[0] === 'cloud.py' ? 'amber' : m[0] === 'db.py' ? 'herb' : 'plain';
+    box(s, 80 + col * 194, 414 + row * 72, 182, 58, [m[0], m[1]], kind, { size: 13, mono: false });
+  });
+
+  // Local engines
+  box(s, 60, 668, 1000, 150, null, 'ghost', { dash: true });
+  add(s, `<text x="78" y="692" font-family='"Segoe UI"' font-size="13" font-weight="700" letter-spacing="1" fill="${C.grey}">LOCAL ENGINES  (used offline, and as the fallback when the cloud call fails)</text>`);
+  box(s, 80, 712, 230, 86, ['Whisper', 'whisper.cpp ggml-small.en,', 'else openai/whisper-tiny.en'], 'plain', { size: 12 });
+  box(s, 330, 712, 230, 86, ['Handwriting OCR', 'TrOCR trocr-base-handwritten', '+ EasyOCR line detection'], 'plain', { size: 12 });
+  box(s, 580, 712, 230, 86, ['Ollama LLM', 'default qwen3:8b', 'JSON-schema output'], 'plain', { size: 12 });
+  box(s, 830, 712, 210, 86, ['Clinical NER', 'samrawal clinical-ner', '+ Bio_ClinicalBERT'], 'plain', { size: 12 });
+
+  // SQLite
+  box(s, 60, 848, 1000, 80, null, 'herb');
+  text(s, 560, 876, ['SQLite  audit_log  (WAL mode)', 'append-only: triggers block UPDATE of content columns and DELETE;  each row stores SHA-256( fields + previous hash )'], { size: 14, boldFirst: true });
+
+  // Cloud
+  box(s, 1160, 160, 380, 150, null, 'amber');
+  text(s, 1350, 235, ['Groq  (online mode only)', 'chat model: openai/gpt-oss-120b', 'hosted Whisper: whisper-large-v3-turbo', 'OpenAI-compatible HTTPS API'], { size: 14, boldFirst: true, lh: 24 });
+  box(s, 1160, 400, 380, 120, null, 'plain');
+  text(s, 1350, 440, ['Supabase  (Postgres)', 'table audit_log', 'key: device_id + record_id'], { size: 14, boldFirst: true, lh: 24 });
+  box(s, 1160, 610, 380, 120, null, 'blue');
+  text(s, 1350, 650, ['Supervisor dashboard', 'Next.js, read-only', 'shift board, audit explorer, stats'], { size: 14, boldFirst: true, lh: 24 });
+
+  // arrows
+  arrow(s, [[560, 250], [560, 300]], { both: true, label: 'HTTP, same origin', lx: 70, ly: 0 });
+  arrow(s, [[560, 630], [560, 668]], { both: true });
+  arrow(s, [[560, 818], [560, 848]], { both: true, color: C.herb });
+  arrow(s, [[1060, 380], [1110, 380], [1110, 235], [1160, 235]], { color: C.amber, dash: true, label: ['text + audio', 'online only'], lx: -2, ly: -150 });
+  arrow(s, [[1060, 560], [1110, 560], [1110, 460], [1160, 460]], { color: C.ink, dash: true, label: 'POST /sync', lx: 0, ly: -30 });
+  arrow(s, [[1350, 520], [1350, 610]], { color: C.ink, label: 'REST', lx: 30, ly: 0 });
+  add(s, `<text x="1350" y="780" text-anchor="middle" font-family='"Segoe UI"' font-size="13" fill="${C.grey}">Without credentials the dashboard shows built-in sample data.</text>`);
+})();
+
+/* =========================== 2. PIPELINE FLOW =========================== */
+(function () {
+  const s = makeSvg('d2', 1600, 800);
+  title(s, 'From spoken note to sealed record', 'Each step either passes a value on or raises a flag. Nothing is silently guessed.', 1600);
+
+  const y1 = 130, h = 92, w = 220;
+  const xs = [40, 330, 620, 910, 1200];
+  box(s, xs[0], y1, w, h, ['1  Capture', 'voice, typed text, or', 'photo of a note'], 'blue', { size: 14 });
+  box(s, xs[1], y1, w, h, ['2  Transcribe / OCR', 'Whisper (voice)', 'TrOCR + EasyOCR (photo)'], 'plain', { size: 14 });
+  box(s, xs[2], y1, w, h, ['3  Extract', 'Groq (online), Ollama,', 'or rule-based fallback'], 'amber', { size: 14 });
+  box(s, xs[3], y1, w, h, ['4  Validate', '10 plain-Python rules,', 'no AI involved'], 'plain', { size: 14 });
+  box(s, xs[4], y1, 330, h, ['5  Cross-check  (optional)', 'clinical NER finds treatments', 'the extractor missed'], 'plain', { size: 14 });
+  for (let i = 0; i < 4; i++) arrow(s, [[xs[i] + w, y1 + h / 2], [xs[i + 1], y1 + h / 2]]);
+
+  box(s, 1200, 290, 330, 90, ['6  Draft with flags', 'FHIR-lite items + review flags'], 'herb', { size: 14 });
+  arrow(s, [[1365, y1 + h], [1365, 290]]);
+
+  add(s, `<polygon points="1050,420 1135,470 1050,520 965,470" fill="${C.amberBg}" stroke="${C.amber}" stroke-width="1.8"/>`);
+  text(s, 1050, 470, ['Review flag', 'on any item?'], { size: 13, boldFirst: true });
+  arrow(s, [[1200, 335], [1050, 335], [1050, 420]]);
+
+  box(s, 620, 440, 270, 60, ['7  Responder resolves', 'accept value, or remove item'], 'amber', { size: 13 });
+  arrow(s, [[965, 470], [890, 470]], { label: 'yes', color: C.amber, ly: -10 });
+  box(s, 960, 570, 180, 56, ['No flags', 'nothing to resolve'], 'plain', { size: 13 });
+  arrow(s, [[1050, 520], [1050, 570]], { label: 'no', lx: 16, ly: 0 });
+
+  box(s, 330, 440, 230, 60, ['Confirm locked', 'until all flags resolved'], 'red', { size: 13 });
+  arrow(s, [[620, 470], [560, 470]], { color: C.amber });
+
+  box(s, 330, 560, 280, 90, ['8  Confirm', 'responder ID required;', 'one tap seals the record'], 'plain', { size: 14 });
+  arrow(s, [[445, 500], [445, 560]], { color: C.amber });
+  arrow(s, [[960, 598], [610, 598]], {});
+
+  box(s, 40, 560, 250, 90, ['9  Seal', 'SQLite audit_log, SHA-256', 'chained to previous record'], 'herb', { size: 14 });
+  arrow(s, [[330, 605], [290, 605]], { color: C.herb });
+
+  box(s, 40, 290, 250, 90, ['10  Handover report', 'HTML and PDF, with the', 'record hash printed on it'], 'blue', { size: 14 });
+  arrow(s, [[165, 560], [165, 380]], { color: C.herb });
+
+  box(s, 40, 690, 250, 56, ['Optional sync', 'POST /sync to Supabase'], 'plain', { size: 13, dash: true });
+  arrow(s, [[165, 650], [165, 690]], { dash: true });
+
+  add(s, `<text x="330" y="722" font-family='"Segoe UI"' font-size="13" fill="${C.grey}">Online mode sends steps 2 and 3 to Groq and falls back to the local engines on any failure.</text>`);
+  add(s, `<text x="330" y="744" font-family='"Segoe UI"' font-size="13" fill="${C.grey}">Offline mode never leaves the device. Photos are always read locally.</text>`);
+})();
+
+/* =========================== 3. ONLINE / OFFLINE DECISION =========================== */
+(function () {
+  const s = makeSvg('d3', 1700, 960);
+  title(s, 'Online and offline decision flow', 'The backend always produces a draft: cloud first when allowed, then the local model, then plain rules.', 1700);
+
+  // entry
+  box(s, 40, 230, 190, 70, ['Draft request', 'header X-Processing-Mode'], 'blue', { size: 13 });
+  add(s, `<polygon points="360,205 470,265 360,325 250,265" fill="#fff" stroke="${C.ink}" stroke-width="1.8"/>`);
+  text(s, 360, 265, ['Online mode', 'and key set?'], { size: 13, boldFirst: true });
+  arrow(s, [[230, 265], [250, 265]]);
+
+  // Row 1: Groq
+  box(s, 540, 230, 220, 70, ['Groq extract', 'GROQ_LLM_MODEL, JSON mode'], 'amber', { size: 13 });
+  arrow(s, [[470, 265], [540, 265]], { label: 'yes', color: C.amber, ly: -8 });
+  arrow(s, [[760, 265], [850, 265]]);
+  add(s, `<polygon points="940,215 1030,265 940,315 850,265" fill="#fff" stroke="${C.ink}" stroke-width="1.8"/>`);
+  text(s, 940, 265, ['Valid', 'schema?'], { size: 13, boldFirst: true });
+  box(s, 1100, 235, 230, 60, ['Draft from Groq', 'shown as groq/<model>'], 'amber', { size: 13 });
+  arrow(s, [[1030, 265], [1100, 265]], { label: 'yes', color: C.amber, ly: -8 });
+  text(s, 650, 330, ['one retry with a stricter prompt before giving up'], { size: 12, fill: C.grey });
+
+  // Row 2: Local
+  box(s, 540, 470, 220, 70, ['Local Ollama extract', 'LLM_MODEL, JSON schema'], 'plain', { size: 13 });
+  arrow(s, [[360, 325], [360, 505], [540, 505]], { label: 'no', ly: -8 });
+  arrow(s, [[940, 315], [940, 395], [650, 395], [650, 470]], { label: 'no: fall back', ly: -8 });
+  arrow(s, [[760, 505], [850, 505]]);
+  add(s, `<polygon points="940,455 1030,505 940,555 850,505" fill="#fff" stroke="${C.ink}" stroke-width="1.8"/>`);
+  text(s, 940, 505, ['Reachable', 'and valid?'], { size: 13, boldFirst: true });
+  box(s, 1100, 475, 230, 60, ['Draft from local model', 'shown as LLM_MODEL'], 'herb', { size: 13 });
+  arrow(s, [[1030, 505], [1100, 505]], { label: 'yes', color: C.herb, ly: -8 });
+
+  // Row 3: Rules
+  box(s, 830, 680, 220, 60, ['Rule-based extractor', 'built in, instant'], 'plain', { size: 13 });
+  arrow(s, [[940, 555], [940, 680]], { label: 'no', lx: 16, ly: 0 });
+  box(s, 1100, 680, 230, 60, ['Draft from rules', 'shown as "rule-based"'], 'red', { size: 13 });
+  arrow(s, [[1050, 710], [1100, 710]]);
+
+  // Merge
+  box(s, 1420, 235, 240, 505, null, 'blue');
+  text(s, 1540, 487, ['Validation', 'Review and flags', 'Confirm and seal', '', 'identical for all', 'three results'], { size: 15, boldFirst: true, lh: 26 });
+  arrow(s, [[1330, 265], [1420, 265]], { color: C.amber });
+  arrow(s, [[1330, 505], [1420, 505]], { color: C.herb });
+  arrow(s, [[1330, 710], [1420, 710]], { color: C.red });
+
+  // Voice
+  zone(s, 40, 790, 1620, 140, 'Voice transcription tries, in order', { fill: '#fff', stroke: C.line });
+  box(s, 330, 846, 330, 50, ['1  Groq Whisper  (online mode)'], 'amber', { size: 13, boldFirst: false });
+  box(s, 720, 846, 400, 50, ['2  whisper.cpp  (needs its binary + model file)'], 'plain', { size: 13, boldFirst: false });
+  box(s, 1180, 846, 440, 50, ['3  local Whisper through transformers'], 'plain', { size: 13, boldFirst: false });
+  arrow(s, [[660, 871], [720, 871]]);
+  arrow(s, [[1120, 871], [1180, 871]]);
+})();
+
+/* =========================== 4. AUDIT CHAIN =========================== */
+(function () {
+  const s = makeSvg('d4', 1500, 800);
+  title(s, 'Tamper-evident audit chain', 'Each record carries the hash of the one before it, so changing any earlier record breaks every record after it.', 1500);
+
+  const bx = [60, 560, 1060], by = 110, bw = 400, bh = 330;
+  ['Record 1', 'Record 2', 'Record 3'].forEach((t, i) => {
+    box(s, bx[i], by, bw, bh, null, 'plain');
+    add(s, `<text x="${bx[i] + 20}" y="${by + 30}" font-family='"Segoe UI"' font-size="16" font-weight="700" fill="${C.ink}">${t}</text>`);
+    const rows = ['record_id', 'encounter_id', 'created_at', 'input_type  (text | voice | image)', 'raw_text', 'record_json  (FHIR-lite bundle)', 'model_name, prompt_version', 'reviewed_by', 'corrects_record_id  (optional)'];
+    rows.forEach((r, k) => add(s, `<text x="${bx[i] + 20}" y="${by + 62 + k * 20}" font-family="Consolas, monospace" font-size="13" fill="${C.ink}">${esc(r)}</text>`));
+    box(s, bx[i] + 14, by + 252, bw - 28, 28, [i === 0 ? 'prev_hash = "GENESIS"' : `prev_hash = hash of Record ${i}`], 'amber', { size: 13, boldFirst: false, mono: true });
+    box(s, bx[i] + 14, by + 288, bw - 28, 28, ['hash = SHA-256( all fields + prev_hash )'], 'herb', { size: 13, boldFirst: false, mono: true });
+  });
+  arrow(s, [[bx[0] + bw, by + 302], [bx[1], by + 302]], { color: C.herb, w: 2.4 });
+  arrow(s, [[bx[1] + bw, by + 302], [bx[2], by + 302]], { color: C.herb, w: 2.4 });
+
+  zone(s, 60, 490, 680, 270, 'Enforced by SQLite triggers', { fill: '#fff', stroke: C.line });
+  box(s, 84, 530, 300, 92, ['No UPDATE', 'on any content column', 'the update aborts with an error'], 'red', { size: 14 });
+  box(s, 410, 530, 300, 92, ['No DELETE', 'the log is strictly', 'append-only'], 'red', { size: 14 });
+  box(s, 84, 645, 626, 90, ['Only one column may change: synced (0 to 1)', 'set after a record has been pushed to Supabase; it is not part of the hash'], 'plain', { size: 14 });
+
+  zone(s, 780, 490, 660, 270, 'Verification', { fill: '#fff', stroke: C.line });
+  box(s, 804, 530, 612, 60, ['GET /audit/verify  walks the table in order'], 'blue', { size: 14, boldFirst: false });
+  box(s, 804, 605, 612, 60, ['recomputes each hash and compares prev_hash links'], 'plain', { size: 14, boldFirst: false });
+  box(s, 804, 680, 612, 56, ['reports the first broken row, or "chain intact"'], 'herb', { size: 14, boldFirst: false });
+  arrow(s, [[1110, 590], [1110, 605]]);
+  arrow(s, [[1110, 665], [1110, 680]]);
+})();
+
+/* =========================== 5. SEQUENCE =========================== */
+(function () {
+  const s = makeSvg('d5', 1600, 1120);
+  title(s, 'End-to-end sequence for one note', 'Online mode shown. In offline mode the extraction engine is the local Ollama model and nothing leaves the device.', 1500);
+
+  const L = [
+    ['Responder', 120], ['Field app (React)', 400], ['FastAPI backend', 710], ['Groq / local models', 1010], ['SQLite audit_log', 1260], ['Supabase + dashboard', 1480],
+  ];
+  const top = 100, bottom = 1085;
+  L.forEach(([n, x], i) => {
+    const w = i === 5 ? 210 : i >= 3 ? 190 : 200;
+    box(s, x - w / 2, top, w, 44, [n], i === 3 ? 'amber' : i === 4 ? 'herb' : i === 0 ? 'ghost' : 'plain', { size: 13 });
+    add(s, `<line x1="${x}" y1="${top + 44}" x2="${x}" y2="${bottom}" stroke="${C.line}" stroke-width="1.4" stroke-dasharray="5 6"/>`);
+  });
+  const X = Object.fromEntries(L.map(l => [l[0], l[1]]));
+  const [r, u, b, g, d, c] = L.map(l => l[1]);
+  let y = 190;
+  function msg(from, to, label, o = {}) {
+    const dir = to > from ? 1 : -1;
+    arrow(s, [[from + (o.self ? 0 : 0), y], [to, y]], { color: o.color || C.ink, dash: o.dash });
+    const lw = label.length * 6.5 + 14;
+    add(s, `<rect x="${(from + to) / 2 - lw / 2}" y="${y - 24}" width="${lw}" height="18" fill="#fff"/>`);
+    text(s, (from + to) / 2, y - 15, [label], { size: 12.5, fill: o.lcolor || C.ink });
+    y += o.gap || 54;
+  }
+  msg(r, u, 'speak, type, or photograph the note');
+  msg(u, b, 'POST /draft/voice | /draft/text | /draft/image  + mode header');
+  msg(b, g, 'transcribe (voice) and extract medications + procedures', { color: C.amber, lcolor: C.amber });
+  msg(g, b, 'JSON that matches the schema (one retry; else local fallback)', { color: C.amber, dash: true, lcolor: C.amber });
+  add(s, `<rect x="${b - 105}" y="${y - 26}" width="210" height="40" rx="8" fill="${C.paper}" stroke="${C.line}"/>`);
+  text(s, b, y - 6, ['validate: source words, units, ranges', 'FHIR-lite mapping, optional NER'], { size: 11.5, lh: 14 });
+  y += 58;
+  msg(b, u, 'draft + flags + engine name');
+  msg(u, r, 'review: flags must be accepted or removed');
+  msg(r, u, 'accept flags, enter responder ID, confirm');
+  msg(u, b, 'POST /confirm');
+  msg(b, d, 'INSERT row: hash = SHA-256( fields + prev_hash )', { color: C.herb, lcolor: C.herb });
+  msg(d, b, 'record_id + hash; chain verified', { color: C.herb, dash: true, lcolor: C.herb });
+  msg(b, u, 'sealed: record ID and hash');
+  msg(u, b, 'GET /encounters/{id}/report.pdf');
+  msg(b, u, 'handover PDF  (hash printed on the form)');
+  msg(b, c, 'POST /sync  (optional, when a connection exists)', { color: C.ink, dash: true });
+  msg(c, b, 'rows stored; duplicates merged on (device_id, record_id)', { dash: true });
+})();
+</script>
+</body>
+</html>

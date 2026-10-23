@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sanjeevani Lekh: System Design and Project Guide</title>
+<style>
+  @page { size: A4; margin: 18mm 17mm 18mm 17mm; }
+  @page wide { size: A4 landscape; margin: 13mm 14mm 14mm 14mm; }
+  :root { --ink: #0C1B22; --grey: #5B6B71; --rule: #C9D2D5; --herb: #0E7A5C; --paper: #F3F6F5; --amber: #A96400; }
+  * { box-sizing: border-box; }
+  html { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 9.7pt; line-height: 1.48; }
+  body { margin: 0; }
+  h1, h2, h3 { font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  h1 { font-size: 22pt; line-height: 1.15; margin-bottom: 4mm; }
+  h2 { font-size: 14pt; margin: 6mm 0 2mm; padding-bottom: 1.5mm; border-bottom: 0.6pt solid var(--ink); break-after: avoid; }
+  h3 { font-size: 11pt; margin: 4mm 0 1.2mm; break-after: avoid; }
+  p { margin: 0 0 2.6mm; orphans: 3; widows: 3; }
+  .eyebrow { font-size: 8pt; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey); margin-bottom: 2mm; }
+  .lead { font-size: 11.5pt; color: #223138; max-width: 150mm; }
+  .small { font-size: 8.5pt; color: var(--grey); }
+  code, .mono { font-family: Consolas, "Courier New", monospace; font-size: 8.8pt; background: #EEF2F1; padding: 0.3mm 1.2mm; border-radius: 1mm; }
+  ul, ol { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1mm; }
+  table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9pt; break-inside: auto; }
+  th { text-align: left; font-size: 7.8pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); padding: 1.6mm 2.5mm 1.6mm 0; border-bottom: 0.8pt solid var(--ink); }
+  td { padding: 1.7mm 2.5mm 1.7mm 0; border-bottom: 0.4pt solid var(--rule); vertical-align: top; }
+  tr { break-inside: avoid; }
+  table.c td { padding: 1.05mm 2mm 1.05mm 0; font-size: 8.6pt; }
+  table.c th { padding: 1.2mm 2mm 1.2mm 0; }
+  figure { margin: 3mm 0 4mm; break-inside: avoid; }
+  figure img { display: block; width: 100%; border: 0.5pt solid var(--rule); }
+  figcaption { font-size: 8.5pt; color: var(--grey); margin-top: 1.5mm; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .grid2 figure { margin: 0 0 3mm; }
+  .note { background: var(--paper); border: 0.5pt solid var(--rule); border-radius: 1.5mm; padding: 3mm 4mm; margin: 3mm 0 4mm; font-size: 9.5pt; break-inside: avoid; }
+  .note b { color: var(--ink); }
+  .pb { break-before: auto; }
+  .wide { page: wide; break-before: page; }
+  .wide h2 { margin-top: 0; }
+  .wide figure { margin: 2mm 0 0; }
+  .wide figure img { width: auto; max-width: 100%; max-height: 152mm; margin: 0 auto; border: 0; }
+  .wide figcaption { text-align: center; }
+
+  /* cover */
+  .cover { height: 258mm; display: flex; flex-direction: column; justify-content: space-between; break-after: page; }
+  .cover h1 { font-size: 36pt; line-height: 1.05; margin: 10mm 0 4mm; }
+  .cover .brand { display: flex; align-items: center; gap: 4mm; }
+  .cover .brand span { font-size: 9pt; letter-spacing: 0.14em; color: var(--grey); }
+  .cover img.hero { width: 100%; border: 0.5pt solid var(--rule); }
+  .meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; font-size: 9pt; border-top: 0.8pt solid var(--ink); padding-top: 3mm; }
+  .meta b { display: block; font-size: 7.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); font-weight: 600; margin-bottom: 0.8mm; }
+  .toc { columns: 3; column-gap: 8mm; margin: 4mm 0 0; padding: 0; list-style: none; }
+  .toc li { padding: 0.7mm 0; border-bottom: 0.4pt solid var(--rule); break-inside: avoid; }
+  .toc li span { color: var(--grey); margin-right: 3mm; font-variant-numeric: tabular-nums; }
+  .stat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 3mm 0 4mm; }
+  .stat div { border: 0.5pt solid var(--rule); border-radius: 1.5mm; padding: 3mm; }
+  .stat b { display: block; font-size: 17pt; font-weight: 600; letter-spacing: -0.02em; }
+  .stat span { font-size: 8.2pt; color: var(--grey); }
+  .tree { font-family: Consolas, "Courier New", monospace; font-size: 8.3pt; line-height: 1.45; background: var(--paper); border: 0.5pt solid var(--rule); border-radius: 1.5mm; padding: 3mm 4mm; white-space: pre; break-inside: avoid; }
+  .pill { display: inline-block; font-size: 7.6pt; letter-spacing: 0.06em; padding: 0.4mm 2mm; border-radius: 3mm; background: #FCEFD6; color: var(--amber); font-weight: 600; }
+  .pill.i { background: #E5EDFB; color: #2A63D6; }
+</style>
+</head>
+<body>
+
+<!-- ======================= COVER ======================= -->
+<section class="cover">
+  <div>
+    <div class="brand">
+      <svg width="44" height="44" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#0C1B22"/><path d="M16 4.2c6.4 3.7 9 9.9 6.4 15.6-1.3 2.9-3.8 5.3-6.4 8-2.6-2.7-5.1-5.1-6.4-8C7 14.1 9.6 7.9 16 4.2Z" stroke="#4BF2A2" stroke-width="1.7" stroke-linejoin="round"/><path d="M3.5 17.5h7.2l2.1-3.4 3.1 8.6 2.6-11.2 1.8 6h8.2" stroke="#E4F1EC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>SANJEEVANI LEKH</span>
+    </div>
+    <h1>Offline-first clinical record<br>for first responders</h1>
+    <p class="lead">System design and project guide. How a spoken, typed or photographed field note becomes a verified, tamper-evident record and a printable handover.</p>
+  </div>
+  <img class="hero" src="../screenshots/01_landing_hero.png" alt="Landing page">
+  <div>
+    <div class="meta">
+      <div><b>Project</b>Virtusa Jatayu 2026</div>
+      <div><b>Team</b>Milind Verma, Nikhil Agrawal, Gaurav Kumar, Riya Mehta</div>
+      <div><b>Version</b>October 2026</div>
+    </div>
+    <p class="small" style="margin-top:3mm">Research and portfolio project. Not a medical device. Every record is confirmed by a responder.</p>
+  </div>
+</section>
+
+<!-- ======================= CONTENTS + OVERVIEW ======================= -->
+<section>
+  <div class="eyebrow">Contents</div>
+  <ol class="toc">
+    <li><span>1</span>Overview</li>
+    <li><span>2</span>System architecture</li>
+    <li><span>3</span>From note to record</li>
+    <li><span>4</span>Online and offline modes</li>
+    <li><span>5</span>Audit chain and data model</li>
+    <li><span>6</span>End-to-end sequence</li>
+    <li><span>7</span>User interface</li>
+    <li><span>8</span>API reference</li>
+    <li><span>9</span>Testing and measured results</li>
+    <li><span>10</span>Running the project</li>
+    <li><span>11</span>Limitations and next steps</li>
+  </ol>
+
+  <h2>1  Overview</h2>
+  <h3>The problem</h3>
+  <p>In an emergency, responders give drugs and perform procedures quickly and have no time to write them down. Notes end up on gloves, scraps of paper, or in memory. That causes three problems: the receiving hospital may not know a drug has already been given, doses and times written later from memory are often wrong, and nobody can later show exactly what happened and when.</p>
+  <h3>What the system does</h3>
+  <p>A responder speaks, types, or photographs a field note. Sanjeevani Lekh extracts every medication and procedure into a structured record, checks each value against the responder's own words, asks the responder to resolve anything uncertain, and then seals the confirmed record into an append-only log in which each record carries the hash of the one before it. From that log it prints a one-page handover for the receiving clinician.</p>
+  <h3>Design principles</h3>
+  <ul>
+    <li><b>Never guess.</b> A value must be traceable to words in the original note. If it is not, it is left empty and flagged, not filled in.</li>
+    <li><b>A human confirms every record.</b> Items with a review flag must be accepted or removed before the record can be sealed.</li>
+    <li><b>Tamper-evident, not just stored.</b> Records are hash-chained, and the database itself refuses updates and deletes.</li>
+    <li><b>Offline first, cloud optional.</b> The whole flow works on the device. An optional online mode uses Groq, and any cloud failure falls back to the local models.</li>
+    <li><b>Always produce a draft.</b> If the cloud and the local model are both unavailable, a built-in rule-based extractor still returns something the responder can review.</li>
+  </ul>
+  <div class="stat">
+    <div><b>16</b><span>API endpoints</span></div>
+    <div><b>10</b><span>validation rules, plain Python</span></div>
+    <div><b>17</b><span>drugs in the reference list</span></div>
+    <div><b>85</b><span>automated tests passing</span></div>
+  </div>
+  <table class="c">
+    <tr><th style="width:26%">Part</th><th>What it is</th></tr>
+    <tr><td><b>Backend</b></td><td>Python and FastAPI service with an SQLite audit log. About 3,900 lines in <code>backend/app</code> and 1,700 lines of tests.</td></tr>
+    <tr><td><b>Responder app</b></td><td>React and Vite single-page app: landing page, field app, documentation. Served by the backend. About 6,600 lines.</td></tr>
+    <tr><td><b>Supervisor dashboard</b></td><td>Next.js, read-only, reads the synced <code>audit_log</code> table from Supabase. About 1,300 lines.</td></tr>
+    <tr><td><b>Output</b></td><td>FHIR-lite <code>MedicationAdministration</code> and <code>Procedure</code> resources in a <code>Bundle</code>, plus an HTML and PDF handover report.</td></tr>
+  </table>
+</section>
+
+<!-- ======================= ARCHITECTURE ======================= -->
+<section>
+  <h2>2  System architecture</h2>
+  <p>Figure 1 on the next page shows the whole system. The tables below name each part.</p>
+  <h3>2.1  Backend modules</h3>
+  <table class="c">
+    <tr><th style="width:24%">Module</th><th>Responsibility</th></tr>
+    <tr><td><code>main.py</code></td><td>FastAPI app and every route. Runs the draft pipeline, serves the built UI, restricts CORS to localhost.</td></tr>
+    <tr><td><code>config.py</code></td><td>Settings loaded from <code>backend/.env</code>. Blank values fall back to defaults.</td></tr>
+    <tr><td><code>transcribe.py</code></td><td>Voice to text with whisper.cpp when its binary and model exist, otherwise a local Whisper pipeline. Uses a medical vocabulary hint prompt.</td></tr>
+    <tr><td><code>ocr.py</code></td><td>Photo to text with TrOCR (<code>microsoft/trocr-base-handwritten</code>) and EasyOCR for lines. Reports per-line confidence and flags low-confidence lines.</td></tr>
+    <tr><td><code>extract.py</code></td><td>Local Ollama extraction constrained by a JSON schema, one retry on invalid output. Also writes the short summary shown on the review screen.</td></tr>
+    <tr><td><code>cloud.py</code></td><td>Groq client for extraction, summary and hosted Whisper. Raises one error type on any failure so the caller can fall back.</td></tr>
+    <tr><td><code>rule_extractor.py</code></td><td>Built-in extractor used when no model is reachable.</td></tr>
+    <tr><td><code>normalise.py</code></td><td>Spoken numbers ("point four" to 0.4), times, routes ("under the tongue" to SL), units and drug aliases (nitro to nitroglycerin, using <code>data/drug_reference.json</code>).</td></tr>
+    <tr><td><code>validate.py</code></td><td>The 10 safety rules. No AI involved. Produces flags.</td></tr>
+    <tr><td><code>fhir.py</code></td><td>Maps items to FHIR-lite resources with the source words attached as an extension.</td></tr>
+    <tr><td><code>clinical_ner.py</code></td><td>Optional cross-check with a clinical NER model and Bio_ClinicalBERT embeddings.</td></tr>
+    <tr><td><code>db.py</code></td><td>The only module that touches SQLite. Hash chaining, triggers, verification.</td></tr>
+    <tr><td><code>report.py</code></td><td>Handover report as HTML (Jinja2) and PDF (ReportLab).</td></tr>
+    <tr><td><code>sync.py</code></td><td>Pushes unsynced rows to Supabase and marks them synced.</td></tr>
+  </table>
+  <h3>2.2  Technology</h3>
+  <table class="c">
+    <tr><th style="width:24%">Layer</th><th>Technology</th></tr>
+    <tr><td>Backend</td><td>Python, FastAPI, Pydantic, httpx, SQLite (WAL mode), Jinja2, ReportLab</td></tr>
+    <tr><td>Speech</td><td>whisper.cpp (<code>ggml-small.en</code>), or Whisper via transformers; Groq <code>whisper-large-v3-turbo</code> online</td></tr>
+    <tr><td>Handwriting</td><td>TrOCR and EasyOCR</td></tr>
+    <tr><td>Language model</td><td>Ollama (default <code>qwen3:8b</code>) offline; Groq <code>openai/gpt-oss-120b</code> online</td></tr>
+    <tr><td>Clinical NER</td><td><code>samrawal/bert-base-uncased_clinical-ner</code> and <code>emilyalsentzer/Bio_ClinicalBERT</code></td></tr>
+    <tr><td>Responder app</td><td>React 18, Vite, Lenis smooth scroll, lucide icons</td></tr>
+    <tr><td>Dashboard</td><td>Next.js 14, Supabase client</td></tr>
+  </table>
+</section>
+
+<section class="wide">
+  <h3 style="margin:0 0 1mm">Figure 1  System architecture</h3>
+  <figure><img src="../diagrams/1_system_architecture.png" alt="System architecture"><figcaption>Figure 1. Everything on the left runs on the responder's device. Groq and Supabase are optional.</figcaption></figure>
+</section>
+
+
+
+<!-- ======================= PIPELINE ======================= -->
+<section class="wide">
+  <h2>3  From note to record</h2>
+  <figure><img src="../diagrams/2_pipeline_flow.png" alt="Pipeline flow"><figcaption>Figure 2. Each step either passes a value on or raises a flag.</figcaption></figure>
+</section>
+
+<section class="pb">
+  <h3 style="margin-top:0">3.1  Steps in detail</h3>
+  <table class="c">
+    <tr><th style="width:20%">Step</th><th>What happens</th></tr>
+    <tr><td><b>Capture</b></td><td>Voice goes to <code>POST /draft/voice</code>, typed text to <code>/draft/text</code>, a photo to <code>/draft/image</code>. Uploaded audio and images are deleted from disk after processing.</td></tr>
+    <tr><td><b>Extract</b></td><td>A model returns <code>medications</code> and <code>procedures</code> as JSON that must match a schema. The prompt (<code>prompts/extract_v1.txt</code>) requires that every item copy its exact words into <code>source_text</code>. Temperature is 0. One retry with a stricter prompt if the output does not validate.</td></tr>
+    <tr><td><b>Normalise</b></td><td>Spoken numbers, times, routes, units and brand or shorthand drug names are mapped to standard forms.</td></tr>
+    <tr><td><b>Validate</b></td><td>Ten plain-Python rules (table below) compare every item with the original note and the drug reference list.</td></tr>
+    <tr><td><b>Cross-check</b></td><td>Optional. The NER model tags treatments, problems and tests. A treatment in the note that was not extracted raises an info flag.</td></tr>
+    <tr><td><b>Review</b></td><td>The responder sees the original words next to the extracted items. Items with a review flag show the reason and must be accepted or removed.</td></tr>
+    <tr><td><b>Confirm and seal</b></td><td>A responder ID is required. The record is appended to the audit log (section 5).</td></tr>
+    <tr><td><b>Report</b></td><td>One-page handover as HTML or PDF with the record hash printed on it.</td></tr>
+  </table>
+
+  <h3>3.2  Extracted data</h3>
+  <table class="c">
+    <tr><th style="width:22%">Item</th><th>Fields</th></tr>
+    <tr><td>Medication</td><td><code>time</code>, <code>drug</code>, <code>dose_value</code>, <code>dose_unit</code>, <code>route</code>, <code>source_text</code>, <code>indication</code> (looked up from a built-in table; a local-model query only for unlisted drugs)</td></tr>
+    <tr><td>Procedure</td><td><code>time</code>, <code>name</code>, <code>details</code>, <code>source_text</code></td></tr>
+  </table>
+  <p>Items become FHIR-lite resources in a <code>Bundle</code> of type <code>collection</code>: <code>MedicationAdministration</code> for medications and <code>Procedure</code> for procedures, each carrying the responder's own words as an extension (<code>source_text</code>).</p>
+
+  <h3>3.3  Validation rules</h3>
+  <table class="c">
+    <tr><th style="width:24%">Flag code</th><th style="width:15%">Severity</th><th>Raised when</th></tr>
+    <tr><td><code>source_text_not_found</code></td><td><span class="pill">needs review</span></td><td>The item's source words do not appear in the note.</td></tr>
+    <tr><td><code>missing_dose</code></td><td><span class="pill">needs review</span></td><td>A medication has no dose.</td></tr>
+    <tr><td><code>missing_unit</code></td><td><span class="pill">needs review</span></td><td>A dose was given but no unit was stated.</td></tr>
+    <tr><td><code>unit_inferred</code></td><td><span class="pill">needs review</span></td><td>The extracted unit is not mentioned in the item's own source words.</td></tr>
+    <tr><td><code>missing_route</code></td><td><span class="pill">needs review</span></td><td>No route was stated.</td></tr>
+    <tr><td><code>missing_time</code></td><td><span class="pill i">info</span></td><td>No time was stated for the item.</td></tr>
+    <tr><td><code>unknown_drug</code></td><td><span class="pill">needs review</span></td><td>The drug is not in the 17-drug reference list.</td></tr>
+    <tr><td><code>dose_out_of_range</code></td><td><span class="pill">needs review</span></td><td>The dose is outside the reference range for that drug.</td></tr>
+    <tr><td><code>spoken_correction</code></td><td><span class="pill">needs review</span></td><td>The note contains a correction phrase such as "sorry" or "I mean", so the real dose needs a human check.</td></tr>
+    <tr><td><code>duplicate_item</code></td><td><span class="pill">needs review</span></td><td>The same medication administration appears twice.</td></tr>
+  </table>
+  <p class="small" style="margin:0">Reference list: aspirin, nitroglycerin, epinephrine, naloxone, ondansetron, oxygen, albuterol, ipratropium, dextrose, glucagon, midazolam, fentanyl, morphine, amiodarone, adenosine, atropine, diphenhydramine.</p>
+</section>
+
+<!-- ======================= ONLINE / OFFLINE ======================= -->
+<section class="wide">
+  <h2>4  Online and offline modes</h2>
+  <figure><img src="../diagrams/3_online_offline_flow.png" alt="Online and offline decision flow"><figcaption>Figure 3. The backend always produces a draft: cloud first when allowed, then the local model, then plain rules.</figcaption></figure>
+</section>
+
+<section class="pb">
+  <h3 style="margin-top:0">4.1  How the mode is chosen</h3>
+  <p>The field app has an ONLINE / OFFLINE switch in its top bar. It is sent with each request as the header <code>X-Processing-Mode</code>. Without the header the server default applies: <code>PROCESSING_MODE=auto</code> goes online when a Groq key is configured, and <code>offline</code> never contacts the cloud. Without a key the backend is always offline. In online mode any cloud failure (network, rate limit, invalid output after one retry) falls back to the local model, and then to the rule-based extractor. The engine that produced a draft is shown on the review screen and stored in the sealed record.</p>
+  <table>
+    <tr><th style="width:24%">Setting</th><th style="width:26%">Default</th><th>Purpose</th></tr>
+    <tr><td><code>PROCESSING_MODE</code></td><td><code>auto</code></td><td><code>auto</code> or <code>offline</code></td></tr>
+    <tr><td><code>GROQ_API_KEY</code></td><td>empty</td><td>Enables online mode</td></tr>
+    <tr><td><code>GROQ_LLM_MODEL</code></td><td><code>openai/gpt-oss-120b</code></td><td>Online extraction and summary</td></tr>
+    <tr><td><code>GROQ_WHISPER_MODEL</code></td><td><code>whisper-large-v3-turbo</code></td><td>Online voice transcription</td></tr>
+    <tr><td><code>OLLAMA_BASE_URL</code></td><td><code>http://127.0.0.1:11434</code></td><td>Local model server</td></tr>
+    <tr><td><code>LLM_MODEL</code></td><td><code>qwen3:8b</code></td><td>Local extraction model</td></tr>
+    <tr><td><code>ENABLE_CLINICAL_NER</code></td><td><code>true</code></td><td>Optional cross-check; needs torch and transformers</td></tr>
+  </table>
+  <div class="note"><b>Privacy.</b> In online mode the note text and recorded audio are sent to Groq, a third-party service. Use offline mode, or only synthetic data, wherever that is not acceptable. Photos are always read locally. Only the extraction and transcription steps use the cloud; validation, review and the audit log are always local.</div>
+
+  <h3>4.2  Measured extraction quality</h3>
+  <p>The repository includes 20 synthetic EMS notes with answer keys (<code>test-data</code>) and an evaluation script (<code>backend/scripts/evaluate.py</code>). It was run unmodified against two engines, using the same validation rules.</p>
+  <table>
+    <tr><th style="width:38%">Metric</th><th>Rule-based extractor</th><th>Groq <span class="mono">openai/gpt-oss-120b</span></th></tr>
+    <tr><td>Medications found (of 27)</td><td>24, with 6 extra</td><td>27, with 0 extra</td></tr>
+    <tr><td>Procedures found (of 15)</td><td>10, with 7 extra</td><td>13, with 1 extra</td></tr>
+    <tr><td>Drug name F1</td><td>0.84</td><td>1.00</td></tr>
+    <tr><td>Dose exact match (value and unit)</td><td>78.3%</td><td>96.2%</td></tr>
+    <tr><td>Route F1</td><td>0.96</td><td>1.00</td></tr>
+    <tr><td>Time accuracy</td><td>100%</td><td>100%</td></tr>
+    <tr><td>Procedure F1</td><td>0.63</td><td>0.90</td></tr>
+    <tr><td>Wrong items caught by a review flag</td><td>7 of 13</td><td>0 of 1</td></tr>
+    <tr><td>Average extraction time</td><td>about 0.1 s</td><td>about 1.4 s</td></tr>
+  </table>
+  <p class="small">Caveats: 20 notes is a small sample written by the team, and the rule-based extractor may have been tuned on these same notes. The local Ollama model was not measured because Ollama is not installed on the machine used for this run. Two Groq calls needed a retry because of rate limiting. Speech and handwriting accuracy were not measured.</p>
+</section>
+
+<!-- ======================= AUDIT CHAIN ======================= -->
+<section class="wide">
+  <h2>5  Audit chain and data model</h2>
+  <figure><img src="../diagrams/4_audit_chain.png" alt="Audit chain"><figcaption>Figure 4. Changing any earlier record breaks the hash of every record after it.</figcaption></figure>
+</section>
+
+<section class="pb">
+  <h3 style="margin-top:0">5.1  The audit_log table</h3>
+  <table>
+    <tr><th style="width:26%">Column</th><th>Meaning</th></tr>
+    <tr><td><code>record_id</code></td><td>Unique ID of the record, for example <code>REC-CB7DCF11-01</code></td></tr>
+    <tr><td><code>encounter_id</code></td><td>The encounter the record belongs to; an encounter can hold several records</td></tr>
+    <tr><td><code>created_at</code></td><td>Timestamp of sealing</td></tr>
+    <tr><td><code>input_type</code></td><td><code>text</code>, <code>voice</code> or <code>image</code></td></tr>
+    <tr><td><code>raw_text</code></td><td>The responder's words as captured</td></tr>
+    <tr><td><code>record_json</code></td><td>The confirmed FHIR-lite bundle</td></tr>
+    <tr><td><code>model_name</code>, <code>prompt_version</code></td><td>Which engine and prompt produced the draft</td></tr>
+    <tr><td><code>reviewed_by</code></td><td>Responder ID that confirmed the record</td></tr>
+    <tr><td><code>corrects_record_id</code></td><td>Set when this record amends an earlier one; the earlier record is never edited</td></tr>
+    <tr><td><code>prev_hash</code>, <code>hash</code></td><td>The chain. The first record uses <code>GENESIS</code></td></tr>
+    <tr><td><code>synced</code></td><td>0 or 1. The only column that may change, and it is not part of the hash</td></tr>
+  </table>
+  <h3>5.2  Guarantees and their limits</h3>
+  <ul>
+    <li><code>hash</code> is the SHA-256 of a canonical JSON (sorted keys) of all fields above plus <code>prev_hash</code>.</li>
+    <li>SQLite triggers abort any UPDATE to a content column and any DELETE, so the application cannot rewrite history even by mistake.</li>
+    <li><code>GET /audit/verify</code> recomputes every hash in order and reports the first row that does not match.</li>
+    <li>Corrections are new records that point back to the one they amend.</li>
+  </ul>
+  <div class="note"><b>What this does and does not prove.</b> The chain makes tampering detectable. Someone with direct write access to the database file could rewrite the whole chain consistently, so the latest hash is only as trustworthy as the place it is kept. Printing it on the handover form is one way to anchor it outside the device.</div>
+
+  <h3>5.3  Cloud sync and the dashboard</h3>
+  <p>When a connection exists, <code>POST /sync</code> sends rows where <code>synced = 0</code> to the Supabase <code>audit_log</code> table and then marks them synced. Rows are keyed by <code>(device_id, record_id)</code> and merged on conflict, so retrying never creates duplicates. The schema is in <code>dashboard/supabase_schema.sql</code>. The Next.js dashboard only reads: a shift board with one lane per vehicle, counts, a 14-day sparkline, an encounter table, an audit explorer and a quality page. Without Supabase credentials it shows built-in sample data and says so in its header.</p>
+</section>
+
+<!-- ======================= SEQUENCE ======================= -->
+<section class="wide">
+  <h2>6  End-to-end sequence</h2>
+  <figure><img src="../diagrams/5_sequence.png" alt="Sequence diagram"><figcaption>Figure 5. One note from capture to handover, online mode shown.</figcaption></figure>
+</section>
+
+<!-- ======================= UI ======================= -->
+<section class="pb">
+  <h2 style="margin-top:0">7  User interface</h2>
+  <p>The interface uses one identity across the landing page, the field app, the documentation and the dashboard: ECG-paper backgrounds, ink text, herb green for "verified" and amber for "needs a person". Dark monitor-style panels are used only where something is live. Type is Bricolage Grotesque for headings, IBM Plex Sans and Mono for text and data, and Tiro Devanagari for the wordmark संजीवनी लेख. The logo is a leaf (the Sanjeevani herb) with a heartbeat through it.</p>
+
+  <h3>7.1  Landing page</h3>
+  <figure><img src="../screenshots/01_landing_hero.png" alt="Landing hero"><figcaption>Hero: a live monitor and a run sheet that fills as the example note is dictated. The OFFLINE switch in the top bar simulates the connection for the sync demo.</figcaption></figure>
+  <div class="grid2">
+    <figure><img src="../screenshots/02_landing_modes.png" alt="Modes"><figcaption>Three ways in: voice, typed text, photo of a note.</figcaption></figure>
+    <figure><img src="../screenshots/03_landing_timeline.png" alt="Timeline"><figcaption>A scroll-driven timeline of one call, 14:32 to 14:51.</figcaption></figure>
+    <figure><img src="../screenshots/04_landing_sync.png" alt="Offline sync demo"><figcaption>Offline demo: records queue on the device and flow to the cloud when the switch goes online.</figcaption></figure>
+    <figure><img src="../screenshots/05_landing_tamper.png" alt="Tamper demo"><figcaption>Tamper demo: a live SHA-256 chain; editing one dose breaks every later record.</figcaption></figure>
+  </div>
+</section>
+
+<section class="pb">
+  <h3 style="margin-top:0">7.2  Field app: capture</h3>
+  <div class="grid2">
+    <figure><img src="../screenshots/06_app_capture.png" alt="Capture"><figcaption>Capture screen with the ONLINE / OFFLINE switch in the bar.</figcaption></figure>
+    <figure><img src="../screenshots/07_app_recording.png" alt="Recording"><figcaption>Recording: live waveform and transcript on a monitor-style panel.</figcaption></figure>
+  </div>
+  <figure><img src="../screenshots/08_app_type_note.png" alt="Type note"><figcaption>Typed entry with one-tap sample notes.</figcaption></figure>
+
+  <h3>7.3  Field app: review, confirm, seal</h3>
+  <p>The review screen keeps the responder's original words on the left and the extracted items on the right. Each flagged item says why it was flagged. The Confirm button stays locked until every flag is accepted or the item removed. On sealing, the app shows the new record's hash.</p>
+  <figure><img src="../screenshots/09_app_review.png" alt="Review with flags"><figcaption>Review with two open flags: the nitroglycerin unit was not spoken, and the IV has no time.</figcaption></figure>
+</section>
+
+<section class="pb">
+  <div class="grid2">
+    <figure><img src="../screenshots/10_app_review_resolved.png" alt="Resolved"><figcaption>Flags resolved: Confirm is unlocked. The engine is shown under the source words.</figcaption></figure>
+    <figure><img src="../screenshots/11_app_sealed.png" alt="Sealed"><figcaption>Sealed: record ID, encounter ID and SHA-256 hash.</figcaption></figure>
+    <figure><img src="../screenshots/12_app_ledger.png" alt="Ledger"><figcaption>Ledger: the whole chain re-verified on demand.</figcaption></figure>
+    <figure><img src="../screenshots/13_app_handover.png" alt="Handover in app"><figcaption>Handover preview inside the app with PDF download.</figcaption></figure>
+  </div>
+
+  <h3>7.4  Handover report (PDF)</h3>
+  <p>The handover is a plain one-page form: encounter, date, who confirmed it and how it was captured; medications and procedures in time order; the verbatim field note; the integrity line with the record ID and full hash; and a sign-off box for the receiving clinician. It contains no machine-written narrative, only what is in the confirmed record.</p>
+  <figure style="max-width:112mm"><img src="../screenshots/18_handover_pdf.png" alt="Handover PDF"><figcaption>The generated PDF.</figcaption></figure>
+</section>
+
+<section class="pb">
+  <h3 style="margin-top:0">7.5  Documentation page and supervisor dashboard</h3>
+  <div class="grid2">
+    <figure><img src="../screenshots/14_docs.png" alt="Docs page"><figcaption>In-app documentation at <code>/docs</code>; the API explorer is at <code>/api/docs</code>.</figcaption></figure>
+    <figure><img src="../screenshots/17_landing_mobile.png" alt="Mobile" style="max-height:92mm;object-fit:contain"><figcaption>The landing page at phone width.</figcaption></figure>
+  </div>
+  <figure><img src="../screenshots/15_dashboard.png" alt="Dashboard"><figcaption>Supervisor dashboard (sample data): counts, shift board by vehicle, 14-day sparkline, chain count and encounter table.</figcaption></figure>
+  <figure><img src="../screenshots/16_dashboard_audit.png" alt="Audit explorer"><figcaption>Audit explorer: every synced block with its previous hash and block hash.</figcaption></figure>
+</section>
+
+<!-- ======================= API ======================= -->
+<section class="pb">
+  <h2 style="margin-top:0">8  API reference</h2>
+  <p>All routes are served by the backend. Interactive documentation is at <code>/api/docs</code>. The draft routes (<code>text</code>, <code>voice</code>, <code>image</code> and <code>reextract</code>) accept the optional header <code>X-Processing-Mode: online | offline</code>.</p>
+  <table>
+    <tr><th style="width:10%">Method</th><th style="width:36%">Path</th><th>Purpose</th></tr>
+    <tr><td>GET</td><td><code>/health</code></td><td>Database, Ollama and model status; whether a Groq key is configured</td></tr>
+    <tr><td>POST</td><td><code>/draft/text</code></td><td>Typed note to draft</td></tr>
+    <tr><td>POST</td><td><code>/draft/voice</code></td><td>Audio file to draft</td></tr>
+    <tr><td>POST</td><td><code>/draft/image</code></td><td>Photo to draft</td></tr>
+    <tr><td>POST</td><td><code>/draft/reextract</code></td><td>Re-run extraction on edited text</td></tr>
+    <tr><td>POST</td><td><code>/confirm</code></td><td>Append a confirmed record to the chain</td></tr>
+    <tr><td>POST</td><td><code>/correct/{record_id}</code></td><td>Append a correction linked to a record</td></tr>
+    <tr><td>GET</td><td><code>/audit/verify</code></td><td>Re-check every hash in the chain</td></tr>
+    <tr><td>GET</td><td><code>/encounters</code></td><td>List encounters with record counts and sync status</td></tr>
+    <tr><td>GET</td><td><code>/encounters/{id}</code></td><td>All records for one encounter</td></tr>
+    <tr><td>GET</td><td><code>/encounters/{id}/report</code></td><td>Handover report as HTML</td></tr>
+    <tr><td>GET</td><td><code>/encounters/{id}/report.pdf</code></td><td>Handover report as PDF</td></tr>
+    <tr><td>POST</td><td><code>/extract</code></td><td>Extraction only, no validation</td></tr>
+    <tr><td>POST</td><td><code>/sync</code></td><td>Push unsynced records to Supabase</td></tr>
+    <tr><td>POST</td><td><code>/clinical-ner/entities</code></td><td>Treatments, problems and tests in a text</td></tr>
+    <tr><td>POST</td><td><code>/clinical-ner/embedding</code></td><td>Bio_ClinicalBERT embedding of a text</td></tr>
+  </table>
+
+  <h2>9  Testing and measured results</h2>
+  <p>The backend has 94 automated tests across 14 files. In a clean install without the optional model downloads, <b>85 pass</b>, 1 is skipped, 1 (marked <code>llm</code>) needs a running Ollama model, and 7 fail only because they need models that are not installed: the six clinical-NER tests (n2c2 and Bio_ClinicalBERT weights) and one handwriting OCR test (TrOCR weights).</p>
+  <table>
+    <tr><th style="width:32%">Area</th><th>Covered by</th></tr>
+    <tr><td>Audit chain and triggers</td><td><code>test_db.py</code></td></tr>
+    <tr><td>Validation rules, normalisation</td><td><code>test_validate.py</code>, <code>test_normalise.py</code></td></tr>
+    <tr><td>Extraction, rule-based fallback</td><td><code>test_extract.py</code>, <code>test_rule_extractor.py</code></td></tr>
+    <tr><td>FHIR mapping</td><td><code>test_fhir.py</code></td></tr>
+    <tr><td>Draft routes, voice and photo routes</td><td><code>test_draft_text.py</code>, <code>test_transcribe.py</code>, <code>test_ocr.py</code></td></tr>
+    <tr><td>Online/offline routing and fallback (Groq mocked)</td><td><code>test_cloud.py</code></td></tr>
+    <tr><td>Reports</td><td><code>test_report.py</code></td></tr>
+    <tr><td>Sync</td><td><code>test_sync.py</code></td></tr>
+  </table>
+  <p class="small">Not covered: there are no automated browser tests for the interface; speech and handwriting accuracy have not been measured. The suite is forced offline by <code>tests/conftest.py</code>, so a developer's <code>.env</code> never makes a test call Groq.</p>
+</section>
+
+<!-- ======================= RUN ======================= -->
+<section class="pb">
+  <h2 style="margin-top:0">10  Running the project</h2>
+  <p>Requirements: Python 3, Node.js 20 or newer. For offline extraction, an Ollama server with the chosen model. Copy <code>backend/.env.example</code> to <code>backend/.env</code> and fill in the values you need.</p>
+  <div class="tree">cd backend
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --port 8000
+
+cd local-ui
+npm install
+npm run build                   # the backend serves local-ui/dist at http://localhost:8000
+
+cd dashboard                    # optional supervisor view
+npm install
+npm run dev</div>
+  <p style="margin-top:3mm">Optional model downloads for the clinical NER and TrOCR features are handled by <code>backend/scripts/download_models.py</code>. <code>backend/scripts/evaluate.py</code> runs the benchmark, and <code>backend/scripts/tamper_demo.py</code> demonstrates the chain detecting an edit.</p>
+
+  <h3>Repository layout</h3>
+  <div class="tree">backend/
+  app/            FastAPI app and all modules
+  prompts/        extraction, retry and whisper-hint prompts (versioned)
+  data/           drug_reference.json
+  templates/      report.html
+  scripts/        download_models, evaluate, tamper_demo
+  tests/          14 test files
+local-ui/         React + Vite responder app, landing page, docs
+dashboard/        Next.js supervisor dashboard + supabase_schema.sql
+test-data/        20 synthetic notes + answer keys
+DOCS/             architecture, design, requirements, prompts, this guide</div>
+
+  <h2>11  Limitations and next steps</h2>
+  <h3>Limitations today</h3>
+  <ul>
+    <li>Not a medical device and not clinically validated. A responder must confirm every record.</li>
+    <li>The drug reference list has 17 drugs; anything else is flagged as unknown.</li>
+    <li>Online mode sends text and audio to a third party. Offline extraction needs Ollama, and without it the built-in rules are noticeably less accurate (section 4.2).</li>
+    <li>The on-screen live transcript uses the browser's speech recognition where available, and some browsers send that audio to the vendor. The saved record uses the backend's own transcription.</li>
+    <li>The audit chain detects tampering but does not by itself prove when records were created, because timestamps come from the device clock.</li>
+    <li>The dashboard is read-only and has no login of its own beyond the Supabase configuration.</li>
+  </ul>
+  <h3>Reasonable next steps (not built)</h3>
+  <ul>
+    <li>Measure the local Ollama model and Whisper on the same benchmark, and grow the benchmark beyond 20 notes.</li>
+    <li>Anchor the latest hash outside the device, for example on the handover form or in the cloud copy, and verify it on the dashboard.</li>
+    <li>Add automated browser tests for the review-and-confirm flow.</li>
+    <li>Broaden the drug reference and add configurable local protocols.</li>
+  </ul>
+</section>
+
+</body>
+</html>
