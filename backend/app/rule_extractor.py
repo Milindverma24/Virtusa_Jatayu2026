@@ -7,6 +7,7 @@ Extracts medications, dosages, routes, procedures, and timestamps with zero CPU 
 import re
 from typing import List
 from app.schemas import ExtractionResult, MedicationItem, ProcedureItem
+from app.med_indications import get_medication_indication
 from app.normalise import (
     normalise_drug_name,
     normalise_route,
@@ -124,13 +125,15 @@ def extract_with_rules(text: str) -> ExtractionResult:
                 if route_match:
                     route_val = normalise_route(route_match.group(0))
 
+                norm_drug = normalise_drug_name(drug)
                 med = MedicationItem(
                     time=sent_time,
-                    drug=normalise_drug_name(drug),
+                    drug=norm_drug,
                     dose_value=dose_val,
                     dose_unit=unit_val,
                     route=route_val,
                     source_text=sent_str,
+                    indication=get_medication_indication(norm_drug),
                 )
                 medications.append(med)
                 break  # avoid multiple drug matches for same alias in same segment

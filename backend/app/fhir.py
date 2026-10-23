@@ -35,6 +35,13 @@ def map_medication_to_fhir(med: MedicationItem, item_id: str) -> dict[str, Any]:
         ],
     }
 
+    if med.indication:
+        resource["reasonCode"] = [{"text": med.indication}]
+        resource["extension"].append({
+            "url": "http://sanjeevani-lekh.org/fhir/indication",
+            "valueString": med.indication,
+        })
+
     if med.time:
         resource["effectiveDateTime"] = med.time
 

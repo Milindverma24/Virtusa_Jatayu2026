@@ -71,6 +71,22 @@ def _extract_items_from_bundle(bundle_json: str | dict) -> Tuple[List[Dict[str, 
             notes = resource.get("note", [{}])
             source_text = notes[0].get("text") if notes else ""
 
+            # Clinical use / indication
+            indication_str = ""
+            reason_codes = resource.get("reasonCode", [])
+            if reason_codes:
+                indication_str = reason_codes[0].get("text", "")
+            if not indication_str:
+                for ext in resource.get("extension", []):
+                    if ext.get("url") == "http://sanjeevani-lekh.org/fhir/indication":
+                        indication_str = ext.get("valueString", "")
+            if not indication_str:
+                try:
+                    from app.med_indications import get_medication_indication
+                    indication_str = get_medication_indication(drug_name)
+                except Exception:
+                    pass
+
             medications.append({
                 "time": time_str,
                 "drug": drug_name,
@@ -78,6 +94,7 @@ def _extract_items_from_bundle(bundle_json: str | dict) -> Tuple[List[Dict[str, 
                 "dose_unit": dose_unit,
                 "route": route_str,
                 "source_text": source_text,
+                "indication": indication_str,
             })
 
         elif res_type == "Procedure":
@@ -117,6 +134,8 @@ def get_encounter_report_context(encounter_id: str) -> Dict[str, Any]:
     all_medications: List[Dict[str, Any]] = []
     all_procedures: List[Dict[str, Any]] = []
     reviewed_by_set: set[str] = set()
+    raw_notes: List[str] = []
+    clinical_summary = ""
 
     latest_record = None
     if records:
@@ -125,9 +144,31 @@ def get_encounter_report_context(encounter_id: str) -> Dict[str, Any]:
     for rec in records:
         if rec.get("reviewed_by"):
             reviewed_by_set.add(rec["reviewed_by"])
-        meds, procs = _extract_items_from_bundle(rec.get("record_json", "{}"))
+        text = rec.get("raw_text")
+        if text and text.strip() and text.strip() not in raw_notes:
+            raw_notes.append(text.strip())
+
+        rec_json = rec.get("record_json", "{}")
+        if isinstance(rec_json, str):
+            try:
+                parsed_rec = json.loads(rec_json)
+                if parsed_rec.get("summary") and not clinical_summary:
+                    clinical_summary = parsed_rec["summary"]
+            except Exception:
+                pass
+        elif isinstance(rec_json, dict) and rec_json.get("summary") and not clinical_summary:
+            clinical_summary = rec_json["summary"]
+
+        meds, procs = _extract_items_from_bundle(rec_json)
         all_medications.extend(meds)
         all_procedures.extend(procs)
+
+    if not clinical_summary and raw_notes:
+        try:
+            from app.extract import generate_clinical_summary
+            clinical_summary = generate_clinical_summary(" ".join(raw_notes))
+        except Exception:
+            pass
 
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
@@ -135,6 +176,8 @@ def get_encounter_report_context(encounter_id: str) -> Dict[str, Any]:
         "encounter_id": encounter_id,
         "generated_at": now_utc,
         "reviewed_by": ", ".join(sorted(reviewed_by_set)) if reviewed_by_set else None,
+        "raw_notes": raw_notes,
+        "clinical_summary": clinical_summary,
         "medications": all_medications,
         "procedures": all_procedures,
         "chain_valid": chain_valid,
@@ -223,15 +266,31 @@ def render_pdf_report(encounter_id: str) -> bytes:
     )
     story.append(Spacer(1, 14))
 
+    # Original Voice & Field Notes Record
+    if context.get("raw_notes"):
+        story.append(Paragraph("ORIGINAL VOICE & FIELD NOTES RECORD", heading_style))
+        for note in context["raw_notes"]:
+            story.append(Paragraph(f'"{note}"', subtitle_style))
+            story.append(Spacer(1, 4))
+        story.append(Spacer(1, 8))
+
+    # AI Clinical Handover Summary (Ollama)
+    if context.get("clinical_summary"):
+        story.append(Paragraph("AI CLINICAL HANDOVER SUMMARY (OLLAMA)", heading_style))
+        story.append(Paragraph(f"<b>Narrative:</b> {context['clinical_summary']}", body_style))
+        story.append(Spacer(1, 10))
+
     # Medications Table
     story.append(Paragraph("MEDICATIONS ADMINISTERED", heading_style))
-    med_data = [["Time", "Drug Name", "Dose", "Route", "Source Words"]]
+    med_data = [["Time", "Drug Name & Clinical Use", "Dose", "Route", "Source Words"]]
     if context["medications"]:
         for m in context["medications"]:
             dose_str = f"{m['dose_value']} {m['dose_unit'] or ''}".strip() if m['dose_value'] is not None else "—"
+            indication_html = f"<br/><font color='#1F5EFF' size=8><b>Use:</b> {m['indication']}</font>" if m.get("indication") else ""
+            drug_cell = Paragraph(f"<b>{m['drug'].title()}</b>{indication_html}", body_style)
             med_data.append([
                 Paragraph(m["time"] or "—", mono_style),
-                Paragraph(m["drug"].title(), body_style),
+                drug_cell,
                 Paragraph(dose_str, mono_style),
                 Paragraph(m["route"] or "—", mono_style),
                 Paragraph(m["source_text"] or "—", subtitle_style),
@@ -239,7 +298,7 @@ def render_pdf_report(encounter_id: str) -> bytes:
     else:
         med_data.append(["—", "No medications recorded", "—", "—", "—"])
 
-    med_table = Table(med_data, colWidths=[55, 140, 80, 55, 200])
+    med_table = Table(med_data, colWidths=[50, 190, 65, 50, 175])
     med_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#F1F3F5")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#5B6472")),

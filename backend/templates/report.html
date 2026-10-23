@@ -221,6 +221,26 @@
       </div>
     </header>
 
+    {% if raw_notes and raw_notes|length > 0 %}
+    <div class="section">
+      <div class="section-title">Original Voice & Field Notes Record</div>
+      <div style="background: rgba(0, 0, 0, 0.02); border-left: 3px solid var(--primary); padding: 12px 16px; border-radius: 4px; font-size: 14px; font-style: italic; color: var(--text);">
+        {% for note in raw_notes %}
+        <p style="margin-bottom: 6px;">"{{ note }}"</p>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if clinical_summary %}
+    <div class="section">
+      <div class="section-title">AI Clinical Handover Summary (Ollama)</div>
+      <div style="background: rgba(31, 94, 255, 0.05); border: 1px solid rgba(31, 94, 255, 0.2); border-left: 4px solid var(--primary); padding: 14px 18px; border-radius: 6px; font-size: 15px; line-height: 1.6; color: var(--text);">
+        <p><strong>Clinical Narrative:</strong> {{ clinical_summary }}</p>
+      </div>
+    </div>
+    {% endif %}
+
     <div class="section">
       <div class="section-title">Medications Administered</div>
       {% if medications and medications|length > 0 %}
@@ -239,8 +259,13 @@
             <td class="mono">{{ med.time or '—' }}</td>
             <td>
               <div class="drug-name">{{ med.drug }}</div>
+              {% if med.indication %}
+              <div style="color: var(--primary); font-size: 12px; font-weight: 500; margin-top: 3px; line-height: 1.4;">
+                💊 <strong>Clinical Use:</strong> {{ med.indication }}
+              </div>
+              {% endif %}
               {% if med.source_text %}
-              <div class="meta-line" style="font-size: 11px;">"{{ med.source_text }}"</div>
+              <div class="meta-line" style="font-size: 11px; margin-top: 2px;">"{{ med.source_text }}"</div>
               {% endif %}
             </td>
             <td>

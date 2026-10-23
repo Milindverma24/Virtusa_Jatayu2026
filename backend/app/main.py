@@ -28,7 +28,7 @@ from app.db import (
     insert_confirmed_record,
     verify_chain,
 )
-from app.extract import ExtractionError, OllamaServiceError, extract_clinical_data
+from app.extract import ExtractionError, OllamaServiceError, extract_clinical_data, generate_clinical_summary
 from app.rule_extractor import extract_with_rules
 from app.fhir import generate_item_id, to_fhir_bundle
 from app.ocr import OCRError, perform_ocr
@@ -197,7 +197,12 @@ def _process_text_to_draft(
             )
         )
 
-    # Step 5: n2c2 Clinical NER & MIMIC-III cross-validation
+    # Step 5: Generate professional clinical summary using Ollama
+    clinical_summary = generate_clinical_summary(clean_text, client=client)
+    if clinical_summary:
+        bundle["summary"] = clinical_summary
+
+    # Step 6: n2c2 Clinical NER & MIMIC-III cross-validation
     clinical_check = None
     if settings.ENABLE_CLINICAL_NER:
         try:
@@ -235,6 +240,7 @@ def _process_text_to_draft(
             validate=validate_ms,
         ),
         clinical_ner=clinical_check,
+        summary=clinical_summary,
     )
 
 

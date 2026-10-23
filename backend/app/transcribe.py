@@ -49,8 +49,25 @@ def clean_whisper_output(raw_output: str) -> str:
     return " ".join(clean_lines).strip()
 
 
+_asr_pipeline = None
+
+
+def get_asr_pipeline():
+    """Lazy loader for local Whisper ASR pipeline."""
+    global _asr_pipeline
+    if _asr_pipeline is None:
+        try:
+            from transformers import pipeline
+            _asr_pipeline = pipeline("automatic-speech-recognition", model="openai/whisper-tiny.en")
+            logger.info("Local Whisper ASR pipeline loaded successfully.")
+        except Exception as exc:
+            logger.warning("Could not load Transformers Whisper pipeline: %s", exc)
+            _asr_pipeline = False
+    return _asr_pipeline if _asr_pipeline is not False else None
+
+
 def transcribe_audio(audio_path: str | Path) -> Tuple[str, int]:
-    """Transcribes an audio file into plain text using whisper-cli.
+    """Transcribes an audio file into plain text using whisper-cli or local Whisper pipeline.
 
     Args:
         audio_path: Path to the audio file (.wav, .mp3, .ogg, .flac).
@@ -59,57 +76,61 @@ def transcribe_audio(audio_path: str | Path) -> Tuple[str, int]:
         Tuple of (transcribed_text, elapsed_ms).
 
     Raises:
-        TranscriptionError: If audio file is missing or whisper-cli execution fails.
+        TranscriptionError: If audio file is missing or speech transcription fails.
     """
     path_obj = Path(audio_path)
     if not path_obj.exists():
         raise TranscriptionError(f"Audio file not found: {audio_path}")
 
+    start_time = time.perf_counter()
     cli_path = settings.WHISPER_CLI_PATH
     model_path = settings.WHISPER_MODEL_PATH
 
-    if not cli_path.exists():
-        raise TranscriptionError(f"whisper-cli executable not found at: {cli_path}")
-    if not model_path.exists():
-        raise TranscriptionError(f"Whisper model weights not found at: {model_path}")
+    # Method 1: Use whisper.cpp C/C++ CLI if available
+    if cli_path.exists() and model_path.exists():
+        hint_prompt = load_whisper_hint_prompt()
+        cmd = [
+            str(cli_path),
+            "-m",
+            str(model_path),
+            "-f",
+            str(path_obj.resolve()),
+            "-nt",
+            "-np",
+        ]
+        if hint_prompt:
+            cmd.extend(["--prompt", hint_prompt])
 
-    hint_prompt = load_whisper_hint_prompt()
+        try:
+            proc = subprocess.run(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=False,
+                timeout=120,
+            )
+            elapsed_ms = int((time.perf_counter() - start_time) * 1000)
+            if proc.returncode == 0:
+                text = clean_whisper_output(proc.stdout)
+                logger.info("Transcribed audio via whisper.cpp (%s) in %d ms", path_obj.name, elapsed_ms)
+                return text, elapsed_ms
+        except Exception as exc:
+            logger.warning("whisper.cpp failed, falling back to Python ASR: %s", exc)
 
-    cmd = [
-        str(cli_path),
-        "-m",
-        str(model_path),
-        "-f",
-        str(path_obj.resolve()),
-        "-nt",
-        "-np",
-    ]
-    if hint_prompt:
-        cmd.extend(["--prompt", hint_prompt])
+    # Method 2: Local Whisper pipeline
+    asr = get_asr_pipeline()
+    if asr is not None:
+        try:
+            res = asr(str(path_obj.resolve()))
+            elapsed_ms = int((time.perf_counter() - start_time) * 1000)
+            raw_text = res.get("text", "").strip() if isinstance(res, dict) else str(res).strip()
+            logger.info("Transcribed audio via Python Whisper (%s) in %d ms", path_obj.name, elapsed_ms)
+            return raw_text, elapsed_ms
+        except Exception as exc:
+            logger.error("Python Whisper transcription failed: %s", exc)
+            raise TranscriptionError(f"Transcription failed: {exc}") from exc
 
-    start_time = time.perf_counter()
-    try:
-        proc = subprocess.run(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=False,
-            timeout=120,
-        )
-    except subprocess.TimeoutExpired as exc:
-        logger.error("whisper-cli timed out after 120s")
-        raise TranscriptionError("Transcription timed out") from exc
-    except Exception as exc:
-        logger.error("Failed to execute whisper-cli: %s", type(exc).__name__)
-        raise TranscriptionError(f"Transcription execution failed: {exc}") from exc
-
-    elapsed_ms = int((time.perf_counter() - start_time) * 1000)
-
-    if proc.returncode != 0:
-        logger.error("whisper-cli returned non-zero code %d", proc.returncode)
-        raise TranscriptionError(f"whisper-cli failed (exit {proc.returncode}): {proc.stderr[:200]}")
-
-    text = clean_whisper_output(proc.stdout)
-    logger.info("Transcribed audio (%s) in %d ms", path_obj.name, elapsed_ms)
-    return text, elapsed_ms
+    raise TranscriptionError(
+        f"No speech recognition engine available. Neither whisper.cpp at {cli_path} nor transformers whisper could run."
+    )

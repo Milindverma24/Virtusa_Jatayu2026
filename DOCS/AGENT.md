@@ -3,14 +3,14 @@
 Instructions for AI coding assistants (Claude Code, Cursor, Copilot, etc.) working on this repo.
 
 Read this file first. Then read `docs/REQUIREMENTS.md`, `docs/ARCHITECTURE.md`, and `docs/PROMPTS.md` before writing code.
-
----
-
-## 1. What this project is
+   
+-
+ 
+## 1. What this project i
 
 Field-to-Record turns a paramedic's spoken, typed, or written notes into a structured, timestamped, tamper-evident record of medications and procedures. It runs fully offline on a Mac with Apple Silicon.
 
-Pipeline:
+Pipeline:  
 ```
 input → transcribe (mlx-whisper / Apple Vision) → extract (Ollama + medgemma1.5)
       → validate (Python rules) → FHIR-lite → human confirms → SQLite hash chain → report

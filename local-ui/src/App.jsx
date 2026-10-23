@@ -125,6 +125,7 @@ export default function App() {
         const route = res.dosage?.route?.text || res.dosage?.route?.coding?.[0]?.display || '';
         const time = res.effectiveDateTime ? res.effectiveDateTime.split('T')[1]?.slice(0, 5) : '';
         const source_text = res.note?.[0]?.text || '';
+        const indication = res.reasonCode?.[0]?.text || res.extension?.find((e) => e.url?.includes('indication'))?.valueString || '';
 
         parsed.push({
           id: itemId,
@@ -135,6 +136,7 @@ export default function App() {
           route: route,
           time: time,
           source_text: source_text,
+          indication: indication,
           flag: flag,
         });
       } else if (resType === 'Procedure') {
@@ -782,6 +784,17 @@ export default function App() {
                   {draft.raw_text}
                 </div>
 
+                {draft.summary && (
+                  <div style={{ marginTop: 14, padding: 14, borderRadius: 8, background: 'rgba(31, 94, 255, 0.06)', border: '1px solid rgba(31, 94, 255, 0.25)' }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Sparkles size={14} /> Ollama Handover Summary
+                    </div>
+                    <div style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--text)' }}>
+                      {draft.summary}
+                    </div>
+                  </div>
+                )}
+
                 {draft.ocr_confidence && (
                   <div style={{ marginTop: 12, fontSize: 13, color: 'var(--muted)' }}>
                     OCR Detection Confidence: <strong>{Math.round(draft.ocr_confidence * 100)}%</strong>
@@ -831,6 +844,21 @@ export default function App() {
 
                         {item.type === 'procedure' && item.details && (
                           <div className="item-details">{item.details}</div>
+                        )}
+
+                        {item.type === 'medication' && item.indication && (
+                          <div style={{
+                            marginTop: 6,
+                            padding: '5px 10px',
+                            background: 'rgba(31, 94, 255, 0.08)',
+                            border: '1px solid rgba(31, 94, 255, 0.2)',
+                            borderRadius: 6,
+                            fontSize: 12,
+                            color: 'var(--primary)',
+                            lineHeight: 1.4,
+                          }}>
+                            <strong>💊 Clinical Use:</strong> {item.indication}
+                          </div>
                         )}
 
                         {item.source_text && (
