@@ -1,4 +1,4 @@
-# Field-to-Record
+# Field-to-Record.   
 
 **Offline voice-to-structured clinical note generator for first responders.**
 
