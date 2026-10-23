@@ -1,4 +1,4 @@
-# Field-to-Record(1)
+# Field-to-Record
 
 **Offline voice-to-structured clinical note generator for first responders.**
 
@@ -179,5 +179,6 @@ This is a research and portfolio project. It is **not a medical device**. MedGem
 
 - **Milind Verma** · [GitHub](https://github.com/Milindverma24)
 - **Nikhil Agrawal** · [GitHub](https://github.com/agnikhil9897)
+- **Gaurav Kumar** · [GitHub](https://github.com/gk16122004)
 - **Riya Mehta** · [GitHub](https://github.com/1754riya)
 
