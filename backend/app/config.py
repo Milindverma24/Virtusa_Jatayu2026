@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     # Ollama settings
     OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
-    LLM_MODEL: str = "minimax-m3.1-flash:cloud"
+    LLM_MODEL: str = "qwen3:8b"
     LLM_TEMPERATURE: float = 0.0
     LLM_NUM_CTX: int = 4096
     LLM_KEEP_ALIVE: str = "30m"
