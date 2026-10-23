@@ -236,6 +236,6 @@ The local Ollama model and Whisper accuracy have not been measured. Twenty synth
 ## Contributors
 
 - **Milind Verma** · [GitHub](https://github.com/Milindverma24)
-- **Nikhil Agrawal** · [GitHub](https://github.com/agnikhil9897)
+- **Aditya Bipin Kulkarni**
 - **Gaurav Kumar** · [GitHub](https://github.com/gk16122004)
-- **Riya Mehta** · [GitHub](https://github.com/1754riya)
+- **Nikhil Agarwal** · [GitHub](https://github.com/agnikhil9897)

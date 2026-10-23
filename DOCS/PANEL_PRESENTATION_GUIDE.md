@@ -1,7 +1,7 @@
 # Sanjeevani Lekh — Panel Presentation & Demo Master Playbook
 
 > **Target Audience:** Hackathon Panel / Evaluation Jury / Project Evaluators  
-> **Team:** Milind Verma • Nikhil Agrawal • Gaurav Kumar • Riya Mehta  
+> **Team:** Milind Verma • Aditya Bipin Kulkarni • Gaurav Kumar • Nikhil Agarwal  
 > **Track:** AI in Healthcare / Edge Computing / Offline Emergency Systems  
 > **Core Theme:** 100% Offline Edge AI for Emergency First Responders with Cryptographic Auditability
 

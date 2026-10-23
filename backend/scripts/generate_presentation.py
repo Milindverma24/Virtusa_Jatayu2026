@@ -140,7 +140,7 @@ def create_presentation(output_path: Path) -> None:
     tb_meta = s1.shapes.add_textbox(Inches(1.4), Inches(5.1), Inches(10.5), Inches(1.0))
     tf = tb_meta.text_frame
     p = tf.paragraphs[0]
-    p.text = "Team: Milind Verma • Nikhil Agrawal • Gaurav Kumar • Riya Mehta | Virtusa Jatayu 2026"
+    p.text = "Team: Milind Verma • Aditya Bipin Kulkarni • Gaurav Kumar • Nikhil Agarwal | Virtusa Jatayu 2026"
     p.font.size = Pt(13)
     p.font.bold = True
     p.font.color.rgb = COLOR_BLUE
@@ -509,7 +509,7 @@ def create_presentation(output_path: Path) -> None:
     tb_foot = s12.shapes.add_textbox(Inches(0.8), Inches(6.9), Inches(11.7), Inches(0.4))
     tf_f = tb_foot.text_frame
     p_f = tf_f.paragraphs[0]
-    p_f.text = "Thank You! Questions & Live Demo Welcome. | Presented by: Milind Verma • Nikhil Agrawal • Gaurav Kumar • Riya Mehta"
+    p_f.text = "Thank You! Questions & Live Demo Welcome. | Presented by: Milind Verma • Aditya Bipin Kulkarni • Gaurav Kumar • Nikhil Agarwal"
     p_f.font.size = Pt(12)
     p_f.font.bold = True
     p_f.font.color.rgb = COLOR_BLUE
