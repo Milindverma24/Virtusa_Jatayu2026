@@ -5,12 +5,17 @@ import App from './App';
 
 export default function Root() {
   const [currentPath, setCurrentPath] = useState(() => {
-    return window.location.pathname;
+    return window.location.pathname + window.location.search;
   });
 
   useEffect(() => {
+    localStorage.setItem('sanjeevani_theme', 'dark');
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }, []);
+
+  useEffect(() => {
     const handlePopState = () => {
-      setCurrentPath(window.location.pathname);
+      setCurrentPath(window.location.pathname + window.location.search);
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -22,18 +27,20 @@ export default function Root() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
+  const pathname = currentPath.split('?')[0];
+
   // If path is /docs, render the System Architecture & Docs Page
-  if (currentPath === '/docs' || currentPath.startsWith('/docs/')) {
+  if (pathname === '/docs' || pathname.startsWith('/docs/')) {
     return (
       <DocsPage
-        onOpenApp={() => navigate('/app')}
+        onOpenApp={(targetUrl) => navigate(typeof targetUrl === 'string' ? targetUrl : '/app')}
         onBackToLanding={() => navigate('/')}
       />
     );
   }
 
   // If path is /app, render the Paramedic Field App
-  if (currentPath === '/app' || currentPath.startsWith('/app/')) {
+  if (pathname === '/app' || pathname.startsWith('/app/')) {
     return (
       <App
         onBackToLanding={() => navigate('/')}
@@ -45,7 +52,7 @@ export default function Root() {
   // Otherwise, default to Landing Page at /
   return (
     <LandingPage
-      onOpenApp={() => navigate('/app')}
+      onOpenApp={(targetUrl) => navigate(typeof targetUrl === 'string' ? targetUrl : '/app')}
       onOpenDocs={() => navigate('/docs')}
     />
   );

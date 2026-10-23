@@ -1,7 +1,7 @@
 import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowUpRight01Icon, GithubIcon } from '@hugeicons/core-free-icons';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, ShieldCheck } from 'lucide-react';
 import './CardNav.css';
 
 const THEMES = {
@@ -24,22 +24,22 @@ const THEMES = {
     '--cn-cta-hover': 'brightness(1.08)'
   },
   light: {
-    '--cn-panel': 'rgba(244, 244, 246, 0.84)',
-    '--cn-solid': '#f4f4f6',
-    '--cn-edge': 'rgba(24, 24, 27, 0.07)',
+    '--cn-panel': 'rgba(255, 255, 255, 0.88)',
+    '--cn-solid': '#FFFFFF',
+    '--cn-edge': 'rgba(15, 23, 42, 0.08)',
     '--cn-highlight': 'rgba(255, 255, 255, 0.95)',
-    '--cn-shadow': '0 24px 48px -24px rgba(24, 24, 27, 0.3), 0 6px 16px -10px rgba(24, 24, 27, 0.16)',
-    '--cn-text': '#18181b',
-    '--cn-muted': 'rgba(24, 24, 27, 0.56)',
-    '--cn-hover': 'rgba(24, 24, 27, 0.05)',
-    '--cn-ring': 'rgba(24, 24, 27, 0.45)',
-    '--cn-tile': 'linear-gradient(180deg, #ffffff 0%, #f8f8fa 100%)',
+    '--cn-shadow': '0 12px 32px -10px rgba(15, 23, 42, 0.12), 0 2px 6px -2px rgba(15, 23, 42, 0.04)',
+    '--cn-text': '#0F172A',
+    '--cn-muted': '#475569',
+    '--cn-hover': 'rgba(15, 23, 42, 0.04)',
+    '--cn-ring': '#2563EB',
+    '--cn-tile': 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
     '--cn-tile-rim':
-      'inset 0 0 0 1px rgba(24, 24, 27, 0.07), inset 0 1px 0 rgba(255, 255, 255, 1), 0 4px 10px -5px rgba(24, 24, 27, 0.22)',
-    '--cn-cta': 'linear-gradient(180deg, #2c2c31 0%, #18181b 100%)',
-    '--cn-cta-ink': '#ffffff',
-    '--cn-cta-shadow': 'inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 6px 14px -6px rgba(24, 24, 27, 0.45)',
-    '--cn-cta-hover': 'brightness(1.25)'
+      'inset 0 0 0 1px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1), 0 4px 12px -4px rgba(15, 23, 42, 0.08)',
+    '--cn-cta': 'linear-gradient(135deg, #2563EB 0%, #0D9488 100%)',
+    '--cn-cta-ink': '#FFFFFF',
+    '--cn-cta-shadow': '0 4px 14px rgba(37, 99, 235, 0.3)',
+    '--cn-cta-hover': 'brightness(1.08)'
   }
 };
 

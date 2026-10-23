@@ -63,27 +63,12 @@ export default function LandingPage({ onOpenApp, onOpenDocs }) {
           ease: 'power2.out'
         });
 
-        // 3. Transformation Grid Reveal (Dictation from left, ePCR cards from right)
-        gsap.from('.dictation-panel', {
-          scrollTrigger: {
-            trigger: '.hero-transformation-wrap',
-            start: 'top 82%',
-          },
+        // 3. Trust row entrance reveal
+        gsap.from('.hero-trust-row', {
           opacity: 0,
-          x: -40,
-          duration: 0.85,
-          ease: 'power3.out'
-        });
-
-        gsap.from('.epcr-cards-column', {
-          scrollTrigger: {
-            trigger: '.hero-transformation-wrap',
-            start: 'top 82%',
-          },
-          opacity: 0,
-          x: 40,
-          duration: 0.85,
-          delay: 0.15,
+          y: 20,
+          duration: 0.8,
+          delay: 0.6,
           ease: 'power3.out'
         });
 
@@ -169,7 +154,7 @@ export default function LandingPage({ onOpenApp, onOpenDocs }) {
       onOpenDocs ? onOpenDocs() : (window.location.href = '/docs');
     } else if (link.href && link.href.startsWith('/app')) {
       event.preventDefault();
-      onOpenApp ? onOpenApp() : (window.location.href = '/app');
+      onOpenApp ? onOpenApp(link.href) : (window.location.href = link.href);
     }
   };
 
@@ -199,7 +184,7 @@ export default function LandingPage({ onOpenApp, onOpenDocs }) {
         />
       </header>
 
-      {/* 1. HERO SECTION (With live typewriter, canvas ECG waveform, and flying structured cards) */}
+      {/* 1. HERO SECTION (With headline, paramedic dictation telemetry line & trust badges) */}
       <HeroSection onOpenApp={onOpenApp} onOpenDocs={onOpenDocs} />
 
       {/* 2. TAMPER-EVIDENT BY DESIGN (With genuine SubtleCrypto SHA-256 calculation & interactive fracture) */}

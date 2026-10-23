@@ -1,0 +1,888 @@
+/* ==========================================================================
+   Sanjeevani Lekh - Ultra-Premium Clinical Emergency Command System
+   Aesthetic: Linear x Apple Pro x Cyber-Clinical High Reliability
+   ========================================================================== */
+
+/* 1. Global Shell & Ambient Atmosphere */
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(ellipse at 50% -10%, rgba(76, 141, 255, 0.14) 0%, transparent 55%),
+    radial-gradient(circle at 85% 15%, rgba(45, 212, 191, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 15% 85%, rgba(76, 141, 255, 0.06) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle Clinical Grid Underlay */
+.app-wrapper::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 2. Mission Control Cockpit Bar (Unified Status & Telemetry) */
+.cockpit-header {
+  position: sticky;
+  top: 64px;
+  z-index: 45;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  box-sizing: border-box;
+}
+
+.cockpit-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 18px;
+  background: rgba(14, 20, 30, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  box-shadow: 
+    0 16px 36px -10px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.cockpit-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.encounter-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background: rgba(76, 141, 255, 0.09);
+  border: 1px solid rgba(76, 141, 255, 0.28);
+  border-radius: 9999px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.encounter-capsule:hover {
+  background: rgba(76, 141, 255, 0.18);
+  border-color: rgba(76, 141, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.responder-badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.responder-badge-chip strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.cockpit-center {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cockpit-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Telemetry Pills */
+.telemetry-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.telemetry-pill.live-green {
+  background: rgba(45, 212, 191, 0.08);
+  border-color: rgba(45, 212, 191, 0.28);
+  color: var(--accent);
+}
+
+.telemetry-pill.interactive {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.telemetry-pill.interactive:hover {
+  background: rgba(45, 212, 191, 0.16);
+  border-color: rgba(45, 212, 191, 0.5);
+  transform: translateY(-1px);
+}
+
+.cockpit-theme-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cockpit-theme-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  transform: rotate(15deg);
+}
+
+/* 3. Floating Segmented Navigation Track */
+.floating-nav-deck {
+  display: flex;
+  justify-content: center;
+  margin: 28px auto 32px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 10;
+}
+
+.tactile-nav-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: rgba(14, 20, 31, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9999px;
+  box-shadow: 
+    0 12px 32px -8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.tactile-nav-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.tactile-nav-item:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tactile-nav-item.active {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, rgba(76, 141, 255, 0.9) 0%, rgba(45, 212, 191, 0.85) 100%);
+  box-shadow: 
+    0 4px 18px rgba(76, 141, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.nav-alert-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  background: var(--warning);
+  color: #090D13;
+  font-size: 11px;
+  font-weight: 800;
+  animation: alert-pulse 1.8s infinite;
+}
+
+@keyframes alert-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.85; }
+}
+
+/* 4. Main Capture Hero Container */
+.premium-capture-layout {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+
+.capture-title-lockup {
+  margin-bottom: 28px;
+}
+
+.capture-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  background: rgba(45, 212, 191, 0.08);
+  border: 1px solid rgba(45, 212, 191, 0.28);
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 14px;
+}
+
+.capture-main-headline {
+  font-family: var(--font-serif);
+  font-size: clamp(34px, 5vw, 54px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.capture-lead-sub {
+  font-size: 15.5px;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+
+/* Mode Switcher Pills */
+.mode-toggle-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(20, 28, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  margin-bottom: 40px;
+}
+
+.mode-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* 5. The Centerpiece: Biometric Audio Reactor Orb */
+.orb-stage-wrapper {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 36px;
+}
+
+/* Outer Ambient Glow Ring */
+.orb-ambient-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.25) 0%, rgba(76, 141, 255, 0.15) 45%, transparent 70%);
+  filter: blur(28px);
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.orb-stage-wrapper.recording .orb-ambient-glow {
+  background: radial-gradient(circle, rgba(255, 90, 95, 0.4) 0%, rgba(245, 158, 11, 0.2) 50%, transparent 70%);
+  filter: blur(34px);
+}
+
+/* Rotating Dashed Telemetry Orbit */
+.orb-telemetry-ring {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(45, 212, 191, 0.35);
+  animation: orb-spin 24s linear infinite;
+  pointer-events: none;
+}
+
+.orb-stage-wrapper.recording .orb-telemetry-ring {
+  border-color: rgba(255, 90, 95, 0.6);
+  animation-duration: 8s;
+}
+
+@keyframes orb-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Ripple Shockwaves */
+.orb-ripple {
+  position: absolute;
+  inset: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(45, 212, 191, 0.25);
+  pointer-events: none;
+}
+
+.orb-stage-wrapper.recording .orb-ripple {
+  animation: ripple-pulse 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+  border-color: rgba(255, 90, 95, 0.45);
+}
+
+@keyframes ripple-pulse {
+  0% { transform: scale(0.95); opacity: 0.9; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* The Core Tactile Orb Button */
+.biometric-orb-btn {
+  position: relative;
+  z-index: 2;
+  width: 174px;
+  height: 174px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #182335 0%, #0D1522 100%);
+  border: 2px solid rgba(45, 212, 191, 0.4);
+  box-shadow: 
+    0 24px 60px -12px rgba(0, 0, 0, 0.85),
+    inset 0 2px 4px rgba(255, 255, 255, 0.25),
+    inset 0 -4px 12px rgba(0, 0, 0, 0.5),
+    0 0 32px rgba(45, 212, 191, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #FFFFFF;
+}
+
+.biometric-orb-btn:hover {
+  transform: scale(1.04);
+  border-color: rgba(45, 212, 191, 0.8);
+  box-shadow: 
+    0 30px 70px -12px rgba(0, 0, 0, 0.9),
+    inset 0 2px 6px rgba(255, 255, 255, 0.35),
+    0 0 44px rgba(45, 212, 191, 0.5);
+}
+
+.biometric-orb-btn:active {
+  transform: scale(0.97);
+}
+
+/* When Recording is Active */
+.biometric-orb-btn.recording {
+  background: linear-gradient(145deg, #381216 0%, #1E080B 100%);
+  border-color: #FF5A5F;
+  box-shadow: 
+    0 24px 60px -12px rgba(255, 90, 95, 0.4),
+    inset 0 2px 6px rgba(255, 255, 255, 0.3),
+    0 0 44px rgba(255, 90, 95, 0.6);
+  animation: orb-recording-glow 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes orb-recording-glow {
+  from { box-shadow: 0 0 28px rgba(255, 90, 95, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.3); }
+  to { box-shadow: 0 0 54px rgba(255, 90, 95, 0.8), inset 0 2px 6px rgba(255, 255, 255, 0.5); }
+}
+
+.orb-mic-icon-wrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(45, 212, 191, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  transition: all 0.2s ease;
+}
+
+.biometric-orb-btn.recording .orb-mic-icon-wrap {
+  background: rgba(255, 90, 95, 0.2);
+  color: #FF5A5F;
+}
+
+.orb-action-caption {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+
+.biometric-orb-btn.recording .orb-action-caption {
+  color: #FF5A5F;
+}
+
+/* 6. Active Live Acoustic Stream HUD */
+.live-stream-hud {
+  width: 100%;
+  max-width: 680px;
+  background: rgba(14, 20, 31, 0.85);
+  border: 1px solid rgba(255, 90, 95, 0.4);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 0 auto 36px;
+  box-shadow: 
+    0 20px 48px -10px rgba(0, 0, 0, 0.7),
+    0 0 32px rgba(255, 90, 95, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: hud-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hud-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hud-top-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hud-rec-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #FF5A5F;
+}
+
+.rec-blinking-led {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #FF5A5F;
+  box-shadow: 0 0 10px #FF5A5F;
+  animation: led-blink 1s infinite;
+}
+
+@keyframes led-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.hud-timer-ticker {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+/* 16-Bar Multi-Frequency Visualizer */
+.hud-equalizer-stream {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 38px;
+  margin: 12px 0 16px;
+}
+
+.equalizer-bar {
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #FF5A5F 0%, #F59E0B 100%);
+  animation: eq-bounce 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes eq-bounce {
+  from { height: 18%; opacity: 0.4; }
+  to { height: 95%; opacity: 1; }
+}
+
+.hud-transcript-scrollbox {
+  background: rgba(9, 13, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #FFFFFF;
+  min-height: 56px;
+  max-height: 140px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  font-family: var(--font-sans);
+}
+
+.hud-typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 15px;
+  background: var(--accent);
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: cursor-blink 0.8s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 7. Multi-Modal Tactical Capture Deck */
+.tactical-deck-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  max-width: 880px;
+  margin-bottom: 48px;
+}
+
+@media (max-width: 720px) {
+  .tactical-deck-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.deck-action-card {
+  background: rgba(14, 20, 31, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  padding: 22px;
+  text-align: left;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.deck-action-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(76, 141, 255, 0.45);
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.7),
+    0 0 28px rgba(76, 141, 255, 0.15);
+}
+
+.deck-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.deck-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(76, 141, 255, 0.12);
+  border: 1px solid rgba(76, 141, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.deck-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.deck-card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Fast-Tap Clinical Emergency Presets */
+.preset-chips-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.preset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.preset-chip:hover {
+  background: rgba(76, 141, 255, 0.18);
+  border-color: rgba(76, 141, 255, 0.4);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+/* 8. Recent Confirmed Encounters Ledger */
+.audit-ledger-section {
+  width: 100%;
+  max-width: 880px;
+  text-align: left;
+}
+
+.ledger-header-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ledger-title-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.ledger-cards-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ledger-entry-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: rgba(14, 20, 31, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.ledger-entry-card:hover {
+  background: rgba(20, 28, 43, 0.85);
+  border-color: rgba(45, 212, 191, 0.35);
+  transform: translateX(3px);
+}
+
+.ledger-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ledger-enc-id {
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.ledger-item-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(45, 212, 191, 0.08);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.ledger-card-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* 9. Review Screen Modernization */
+.review-deck-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+.review-headline-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.review-split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 28px;
+}
+
+@media (max-width: 900px) {
+  .review-split-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.review-card-panel {
+  background: rgba(14, 20, 31, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Loud Never-Guess Amber Callouts */
+.amber-safety-banner {
+  background: rgba(245, 165, 36, 0.09);
+  border: 1.5px solid rgba(245, 165, 36, 0.45);
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.amber-banner-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--warning);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.amber-actions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+/* 10. Floating Seal Dock */
+.floating-seal-dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: calc(100% - 48px);
+  max-width: 860px;
+  background: rgba(14, 20, 31, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 14px 22px;
+  box-shadow: 
+    0 24px 60px -12px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* 11. Modal Polish */
+.high-tech-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 14, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.high-tech-modal-card {
+  background: #0E1521;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 28px;
+  width: 100%;
+  max-width: 620px;
+  box-shadow: 
+    0 32px 80px -16px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+}
