@@ -1,197 +1,171 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Lenis from 'lenis';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import CardNav from './CardNav';
-import HeroSection from './HeroSection';
+import HeroSection, { TickerStrip } from './HeroSection';
+import ModesSection from './ModesSection';
+import TimelineSection from './TimelineSection';
+import SyncSection from './SyncSection';
 import TamperDemoSection from './TamperDemoSection';
 import LaunchSection from './LaunchSection';
 import { Activity } from 'lucide-react';
 import { NAV_ITEMS } from '../navItems';
+import { NetContext, prefersReducedMotion } from './lpUtils';
 import './landing.css';
 
-gsap.registerPlugin(ScrollTrigger);
-
 export default function LandingPage({ onOpenApp, onOpenDocs }) {
-  const landingRef = useRef(null);
+  const rootRef = useRef(null);
+  const barRef = useRef(null);
+  const curRef = useRef(null);
+  const [online, setOnline] = useState(false);
 
-  // Lenis smooth scroll + GSAP ScrollTrigger Ticker Synchronization
+  // Smooth scroll (Lenis) + progress hairline
   useEffect(() => {
-    // Respect prefers-reduced-motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-
+    const reduce = prefersReducedMotion();
     let lenis;
-    let lenisRaf;
-
-    try {
-      lenis = new Lenis({
-        duration: 1.15,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: 'vertical',
-        gestureOrientation: 'vertical',
-        smoothWheel: true,
-      });
-
-      // Synchronize Lenis scroll updates with GSAP ScrollTrigger
-      lenis.on('scroll', ScrollTrigger.update);
-
-      lenisRaf = (time) => {
-        lenis.raf(time * 1000);
-      };
-
-      gsap.ticker.add(lenisRaf);
-      gsap.ticker.lagSmoothing(0);
-
-      // GSAP Animations Context
-      const ctx = gsap.context(() => {
-        // 1. Hero text and actions entrance reveal
-        gsap.from('.hero-badge-pill, .hero-display-title, .hero-lead-text, .hero-cta-group', {
-          opacity: 0,
-          y: 32,
-          duration: 0.9,
-          stagger: 0.12,
-          ease: 'power3.out'
-        });
-
-        // 2. Full-width telemetry canvas container entrance
-        gsap.from('.hero-telemetry-fullwidth', {
-          opacity: 0,
-          scale: 0.97,
+    let raf = 0;
+    if (!reduce) {
+      try {
+        lenis = new Lenis({
           duration: 1.1,
-          delay: 0.4,
-          ease: 'power2.out'
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
         });
-
-        // 3. Trust row entrance reveal
-        gsap.from('.hero-trust-row', {
-          opacity: 0,
-          y: 20,
-          duration: 0.8,
-          delay: 0.6,
-          ease: 'power3.out'
-        });
-
-        // 4. Tamper Demo Section reveal
-        gsap.from('.tamper-section-header', {
-          scrollTrigger: {
-            trigger: '#tamper-demo',
-            start: 'top 80%',
-          },
-          opacity: 0,
-          y: 30,
-          duration: 0.8,
-          ease: 'power3.out'
-        });
-
-        gsap.from('.tamper-card', {
-          scrollTrigger: {
-            trigger: '#tamper-demo',
-            start: 'top 75%',
-          },
-          opacity: 0,
-          y: 40,
-          duration: 0.9,
-          ease: 'power3.out'
-        });
-
-        // 5. Dedicated Launch CTA Section reveal
-        gsap.from('.launch-unique-container', {
-          scrollTrigger: {
-            trigger: '#launch-section',
-            start: 'top 82%',
-          },
-          opacity: 0,
-          y: 35,
-          duration: 0.9,
-          ease: 'power3.out'
-        });
-      }, landingRef);
-
-      return () => {
-        ctx.revert();
-        gsap.ticker.remove(lenisRaf);
-        ScrollTrigger.getAll().forEach((t) => t.kill());
-        lenis.destroy();
-      };
-    } catch (e) {
-      console.warn('Lenis + GSAP initialization error:', e);
+        const loop = (time) => { lenis.raf(time); raf = requestAnimationFrame(loop); };
+        raf = requestAnimationFrame(loop);
+      } catch (e) {
+        console.warn('Lenis init failed:', e);
+      }
     }
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      if (barRef.current) barRef.current.style.transform = `scaleX(${h > 0 ? window.scrollY / h : 0})`;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+      if (lenis) lenis.destroy();
+    };
   }, []);
 
-  // Centered logo / title heading element
+  // Reveal on scroll
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    root.querySelectorAll('.rv').forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  // Cursor ring + magnetic buttons (fine pointers only)
+  useEffect(() => {
+    const cur = curRef.current;
+    if (!cur || prefersReducedMotion() || !window.matchMedia('(pointer:fine)').matches) return undefined;
+    let cx = 0;
+    let cy = 0;
+    let tx = 0;
+    let ty = 0;
+    let raf = 0;
+    const onMove = (e) => {
+      tx = e.clientX; ty = e.clientY;
+      cur.style.opacity = 1;
+      const m = e.target.closest && e.target.closest('[data-cur]');
+      cur.classList.toggle('big', !!m);
+      if (m && m.classList.contains('btn')) {
+        const r = m.getBoundingClientRect();
+        m.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.12}px,${(e.clientY - r.top - r.height / 2) * 0.2}px)`;
+      }
+    };
+    const onOut = (e) => { if (e.target.classList && e.target.classList.contains('btn')) e.target.style.transform = ''; };
+    window.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerout', onOut);
+    const loop = () => { cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2; cur.style.transform = `translate(${cx}px,${cy}px)`; raf = requestAnimationFrame(loop); };
+    loop();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('pointermove', onMove); document.removeEventListener('pointerout', onOut); };
+  }, []);
+
   const logoElement = (
-    <div
-      className="card-nav-brand"
-      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      title="Sanjeevani Lekh - Return to top"
-    >
-      <div className="card-nav-brand-icon">
-        <Activity size={16} strokeWidth={2.4} />
-      </div>
+    <div className="card-nav-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} title="Sanjeevani Lekh - Return to top">
+      <div className="card-nav-brand-icon"><Activity size={16} strokeWidth={2.4} /></div>
       <span className="card-nav-brand-text">Sanjeevani Lekh</span>
     </div>
   );
 
-  // Link handler for anchors and SPA routes
   const handleLinkClick = (link, item, event) => {
-    if (link.onClick) {
-      event.preventDefault();
-      link.onClick(event);
-      return;
-    }
+    if (link.onClick) { event.preventDefault(); link.onClick(event); return; }
     if (link.href && (link.href.startsWith('#') || link.href.startsWith('/#'))) {
       event.preventDefault();
       const id = link.href.includes('#') ? link.href.split('#')[1] : '';
       const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (link.href && link.href.startsWith('/docs')) {
       event.preventDefault();
-      onOpenDocs ? onOpenDocs() : (window.location.href = '/docs');
+      if (onOpenDocs) onOpenDocs(); else window.location.href = '/docs';
     } else if (link.href && link.href.startsWith('/app')) {
       event.preventDefault();
-      onOpenApp ? onOpenApp(link.href) : (window.location.href = link.href);
+      if (onOpenApp) onOpenApp(link.href); else window.location.href = link.href;
     }
   };
 
+  const onAnchor = (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const el = document.getElementById(a.getAttribute('href').slice(1));
+    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
+  };
+
   return (
-    <div className="landing-page-root" ref={landingRef}>
-      {/* Film Grain Texture Overlay */}
-      <div className="film-grain-overlay" aria-hidden="true" />
+    <NetContext.Provider value={{ online, setOnline }}>
+      <div className="lp" ref={rootRef} onClick={onAnchor}>
+        <div className="lp-bar" ref={barRef} aria-hidden="true" />
+        <div className="lp-cur" ref={curRef} aria-hidden="true" />
 
-      {/* Full-width Glassy CardNav Menu spanning left to right completely */}
-      <header className="card-nav-container">
-        <CardNav
-          logo={logoElement}
-          logoAlt="Sanjeevani Lekh"
-          logoHref="#"
-          items={NAV_ITEMS}
-          cta={{ label: 'Open the app', onClick: onOpenApp }}
-          docsHref="/docs"
-          onDocsClick={onOpenDocs}
-          githubHref="https://github.com/Milindverma24/Virtusa_Jatayu2026"
-          cardEffect="rise"
-          openOn="click"
-          theme="dark"
-          surface="glass"
-          maxWidth="100%"
-          cardHeight={140}
-          onLinkClick={handleLinkClick}
-        />
-      </header>
+        <header className="card-nav-container">
+          <CardNav
+            logo={logoElement}
+            logoAlt="Sanjeevani Lekh"
+            logoHref="#"
+            items={NAV_ITEMS}
+            cta={{ label: 'Open the app', onClick: onOpenApp }}
+            docsHref="/docs"
+            onDocsClick={onOpenDocs}
+            githubHref="https://github.com/Milindverma24/Virtusa_Jatayu2026"
+            cardEffect="rise"
+            openOn="click"
+            theme="dark"
+            surface="glass"
+            maxWidth="100%"
+            cardHeight={140}
+            onLinkClick={handleLinkClick}
+          />
+        </header>
 
-      {/* 1. HERO SECTION (With headline, paramedic dictation telemetry line & trust badges) */}
-      <HeroSection onOpenApp={onOpenApp} onOpenDocs={onOpenDocs} />
+        <button
+          type="button"
+          className="net"
+          role="switch"
+          aria-checked={online}
+          aria-label="Simulate network connection"
+          data-cur
+          onClick={() => setOnline((v) => !v)}
+        >
+          <span className="led" />
+          <span>{online ? 'ONLINE' : 'OFFLINE'}</span>
+          <span className="sw" />
+        </button>
 
-      {/* 2. TAMPER-EVIDENT BY DESIGN (With genuine SubtleCrypto SHA-256 calculation & interactive fracture) */}
-      <TamperDemoSection />
-
-      {/* 3. DEDICATED LAUNCH CTA SECTION & MINIMALIST FOOTER */}
-      <LaunchSection onOpenApp={onOpenApp} />
-    </div>
+        <HeroSection onOpenApp={onOpenApp} />
+        <TickerStrip />
+        <ModesSection />
+        <TimelineSection />
+        <SyncSection />
+        <TamperDemoSection />
+        <LaunchSection onOpenApp={onOpenApp} onOpenDocs={onOpenDocs} />
+      </div>
+    </NetContext.Provider>
   );
 }

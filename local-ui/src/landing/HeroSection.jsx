@@ -1,301 +1,229 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  ArrowRight,
-  Activity,
-  ShieldCheck,
-  Cpu,
-  UserCheck,
-  WifiOff,
-  BookOpen
-} from 'lucide-react';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { GithubIcon } from '@hugeicons/core-free-icons';
+import { ArrowRight } from 'lucide-react';
+import { prefersReducedMotion, sleep } from './lpUtils';
 
-export default function HeroSection({ onOpenApp, onOpenDocs }) {
-  const canvasRef = useRef(null);
-  const containerRef = useRef(null);
-  const isVisibleRef = useRef(true);
+const NOTE = [
+  ['14:32', 'gave aspirin 324 mg PO chewed', 'Aspirin 324 mg PO'],
+  ['14:34', 'IV 18 gauge left AC', 'IV access 18G L AC'],
+  ['14:38', 'nitro point four under the tongue', 'Nitroglycerin 0.4 SL'],
+];
+const TECH = ['Whisper.cpp', 'MedGemma', 'n2c2 clinical NER', 'Bio_ClinicalBERT', 'FHIR-lite', 'SQLite WAL', 'SHA-256 chain', 'Next.js dashboard', 'Supabase'];
 
-  // Pause heavy rendering when scrolled out of viewport
+function useHeroEcg(canvasRef) {
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisibleRef.current = entry.isIntersecting;
-      },
-      { threshold: 0.05 }
-    );
-    if (containerRef.current) observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  // Full-width Multi-Trace Clinical Physiological Monitor (Lead II, SpO2 Pleth, and VOX Dictation Audio)
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let animId;
-    let sweepX = 0;
-    let timeTick = 0;
-
-    const resizeCanvas = () => {
-      const rect = canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+    const cv = canvasRef.current;
+    if (!cv) return undefined;
+    const ctx = cv.getContext('2d');
+    const reduce = prefersReducedMotion();
+    let W = 0;
+    let H = 0;
+    let x = 0;
+    let ys = [];
+    let raf = 0;
+    const g = (t, c, w, a) => a * Math.exp(-Math.pow((t - c) / w, 2));
+    const yAt = (px) => {
+      const t = (px % 260) / 260;
+      return H * 0.62 - (g(t, 0.18, 0.035, 0.12) - g(t, 0.36, 0.012, 0.14) + g(t, 0.39, 0.014, 1) - g(t, 0.42, 0.014, 0.3) + g(t, 0.64, 0.05, 0.22)) * H * 0.5;
     };
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
+    const size = () => {
+      const d = window.devicePixelRatio || 1;
+      W = cv.clientWidth;
+      H = cv.clientHeight;
+      cv.width = W * d;
+      cv.height = H * d;
+      ctx.setTransform(d, 0, 0, d, 0, 0);
+      ys = new Array(Math.max(1, Math.floor(W))).fill(null);
+      x = 0;
+    };
     const draw = () => {
-      if (!isVisibleRef.current) {
-        animId = requestAnimationFrame(draw);
-        return;
-      }
-
-      const rect = canvas.getBoundingClientRect();
-      const w = rect.width;
-      const h = rect.height;
-      timeTick += 1;
-
-      // Clean background with subtle clinical scanline atmosphere
-      ctx.clearRect(0, 0, w, h);
-
-      // Medical grid (1mm / 5mm scale)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = 'rgba(75,242,162,.07)';
       ctx.lineWidth = 1;
-      const gridSize = 20;
-      for (let x = 0; x < w; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-      for (let y = 0; y < h; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-
-      // 3 Baselines for the 3 distinct physiological channels
-      const yECG = h * 0.25;    // Top channel: Lead II ECG
-      const yPleth = h * 0.58;  // Middle channel: SpO2 Plethysmograph
-      const yAudio = h * 0.85;  // Bottom channel: Paramedic Dictation Audio Modulation
-
-      // Channel divider hairline
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-      ctx.beginPath();
-      ctx.moveTo(0, h * 0.42);
-      ctx.lineTo(w, h * 0.42);
-      ctx.moveTo(0, h * 0.73);
-      ctx.lineTo(w, h * 0.73);
-      ctx.stroke();
-
-      const period = 260; // Heartbeat distance in pixels (~78 BPM)
-
-      // ==========================================
-      // CHANNEL 1: LEAD II ECG (Phosphor Emerald/Teal)
-      // ==========================================
-      ctx.beginPath();
-      ctx.lineWidth = 1.9;
-      ctx.strokeStyle = '#2DD4BF';
-      ctx.shadowColor = 'rgba(45, 212, 191, 0.4)';
-      ctx.shadowBlur = 6;
-
-      for (let x = 0; x <= w; x += 2) {
-        const beatPos = (x + timeTick * 1.8) % period;
-        let y = yECG;
-
-        if (beatPos > 35 && beatPos < 55) {
-          y = yECG - Math.sin(((beatPos - 35) / 20) * Math.PI) * 5;
-        } else if (beatPos >= 60 && beatPos < 65) {
-          y = yECG + 4;
-        } else if (beatPos >= 65 && beatPos < 76) {
-          y = yECG - 26;
-        } else if (beatPos >= 76 && beatPos < 84) {
-          y = yECG + 8;
-        } else if (beatPos >= 105 && beatPos < 135) {
-          y = yECG - Math.sin(((beatPos - 105) / 30) * Math.PI) * 8;
-        }
-
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-
-      // ==========================================
-      // CHANNEL 2: SPO2 PLETHYSMOGRAPH (Ocean Cyan)
-      // ==========================================
-      ctx.beginPath();
-      ctx.lineWidth = 1.6;
-      ctx.strokeStyle = '#4C8DFF';
-      ctx.shadowColor = 'rgba(76, 141, 255, 0.4)';
-      ctx.shadowBlur = 5;
-
-      for (let x = 0; x <= w; x += 2) {
-        const beatPos = (x + timeTick * 1.8) % period;
-        let y = yPleth;
-
-        if (beatPos >= 68 && beatPos < 160) {
-          const t = (beatPos - 68) / 92;
-          const primary = Math.sin(t * Math.PI) * 15;
-          const dicrotic = (t > 0.45 && t < 0.75) ? Math.sin(((t - 0.45) / 0.3) * Math.PI) * 4.5 : 0;
-          y = yPleth - primary + dicrotic;
-        }
-
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-
-      // ==========================================
-      // CHANNEL 3: PARAMEDIC DICTATION AUDIO LINE (Warm Amber)
-      // ==========================================
-      ctx.beginPath();
-      ctx.lineWidth = 1.4;
-      ctx.strokeStyle = '#F5A524';
-      ctx.shadowColor = 'rgba(245, 165, 36, 0.4)';
-      ctx.shadowBlur = 4;
-
-      for (let x = 0; x <= w; x += 3) {
-        const freq1 = Math.sin((x + timeTick * 3) * 0.08);
-        const freq2 = Math.cos((x * 0.15) - timeTick * 2);
-        const freq3 = Math.sin((x + timeTick) * 0.22);
-        const wave = (freq1 * 4.5 + freq2 * 3.5 + freq3 * 2.5);
-
-        const y = yAudio + wave;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // ==========================================
-      // PHOSPHOR SWEEP BAR (Authentic Medical CRT Sweep)
-      // ==========================================
-      sweepX = (timeTick * 2.2) % w;
-
-      const sweepWidth = 28;
-      const eraseGrad = ctx.createLinearGradient(sweepX, 0, sweepX + sweepWidth, 0);
-      eraseGrad.addColorStop(0, 'rgba(9, 13, 19, 0.85)');
-      eraseGrad.addColorStop(1, 'rgba(9, 13, 19, 0)');
-      ctx.fillStyle = eraseGrad;
-      ctx.fillRect(sweepX, 0, sweepWidth, h);
-
-      ctx.strokeStyle = '#2DD4BF';
-      ctx.lineWidth = 1.5;
-      ctx.shadowColor = '#4C8DFF';
+      for (let i = 0; i < W; i += 20) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, H); ctx.stroke(); }
+      for (let j = 0; j < H; j += 20) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(W, j); ctx.stroke(); }
+      ctx.strokeStyle = '#4BF2A2';
+      ctx.lineWidth = 1.8;
+      ctx.shadowColor = '#4BF2A2';
       ctx.shadowBlur = 8;
+      ctx.lineJoin = 'round';
       ctx.beginPath();
-      ctx.moveTo(sweepX, 6);
-      ctx.lineTo(sweepX, h - 6);
+      let started = false;
+      for (let k = 0; k < ys.length; k++) {
+        if (ys[k] == null) { started = false; continue; }
+        if (!started) { ctx.moveTo(k, ys[k]); started = true; } else ctx.lineTo(k, ys[k]);
+      }
       ctx.stroke();
       ctx.shadowBlur = 0;
-
-      animId = requestAnimationFrame(draw);
     };
-
-    draw();
-
+    size();
+    window.addEventListener('resize', size);
+    if (reduce) {
+      for (let i = 0; i < ys.length; i++) ys[i] = yAt(i);
+      draw();
+    } else {
+      const tick = () => {
+        for (let s = 0; s < 2; s++) {
+          ys[x] = yAt(x);
+          x = (x + 1) % ys.length;
+          for (let j = 0; j < 18; j++) ys[(x + j) % ys.length] = null;
+        }
+        draw();
+        raf = requestAnimationFrame(tick);
+      };
+      tick();
+    }
     return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', size);
     };
+  }, [canvasRef]);
+}
+
+export function TickerStrip() {
+  const trRef = useRef(null);
+  useEffect(() => {
+    const el = trRef.current;
+    if (!el || prefersReducedMotion()) return undefined;
+    let tx = 0;
+    let vel = 0;
+    let last = window.scrollY;
+    let raf = 0;
+    const onScroll = () => { vel = window.scrollY - last; last = window.scrollY; };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    const tick = () => {
+      const w = el.scrollWidth / 3;
+      vel *= 0.9;
+      tx -= 0.6 + Math.abs(vel) * 0.15;
+      if (-tx > w) tx += w;
+      el.style.transform = `translateX(${tx}px)`;
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', onScroll); };
   }, []);
+  const words = [...TECH, ...TECH, ...TECH];
+  return (
+    <div className="ticker mon" aria-hidden="true">
+      <div className="tr" ref={trRef}>{words.map((w, i) => <span key={i}>{w}</span>)}</div>
+    </div>
+  );
+}
+
+export default function HeroSection({ onOpenApp }) {
+  const ecgRef = useRef(null);
+  const compRef = useRef(null);
+  const monRef = useRef(null);
+  const sheetRef = useRef(null);
+  const sayRef = useRef(null);
+  const linesRef = useRef(null);
+  const footRef = useRef(null);
+  const vitalsRef = useRef({});
+  useHeroEcg(ecgRef);
+
+  // Vitals drift
+  useEffect(() => {
+    const id = setInterval(() => {
+      const v = vitalsRef.current;
+      if (v.hr) v.hr.textContent = 80 + Math.round(Math.random() * 5);
+      if (v.sp) v.sp.textContent = 96 + Math.round(Math.random() * 2);
+      if (v.bp) v.bp.textContent = `${126 + Math.round(Math.random() * 4)}/${80 + Math.round(Math.random() * 3)}`;
+    }, 2200);
+    return () => clearInterval(id);
+  }, []);
+
+  // Dictation -> run sheet loop
+  useEffect(() => {
+    const say = sayRef.current;
+    const lines = linesRef.current;
+    const foot = footRef.current;
+    if (!say || !lines || !foot) return undefined;
+    let dead = false;
+    const row = (n, on) => {
+      const d = document.createElement('div');
+      d.className = `ln${on ? ' on' : ''}`;
+      d.innerHTML = `<span>${n[0]}</span><em>${n[2]}</em>`;
+      return d;
+    };
+    if (prefersReducedMotion()) {
+      NOTE.forEach((n) => lines.appendChild(row(n, true)));
+      foot.innerHTML = '<span class="stamp">Confirmed</span>';
+      return undefined;
+    }
+    (async () => {
+      while (!dead) {
+        lines.innerHTML = '';
+        foot.innerHTML = '';
+        for (let i = 0; i < NOTE.length && !dead; i++) {
+          say.innerHTML = '<span></span><span class="c"></span>';
+          const tgt = say.firstChild;
+          const s = `${NOTE[i][0]} ${NOTE[i][1]}`;
+          for (let c = 0; c < s.length && !dead; c++) { tgt.textContent += s[c]; await sleep(28); }
+          await sleep(380);
+          const r = row(NOTE[i], false);
+          lines.appendChild(r);
+          await sleep(30);
+          r.classList.add('on');
+          await sleep(500);
+        }
+        if (dead) return;
+        say.innerHTML = '<span style="color:var(--herb)">✓ all values found in your words · hash #9f3a7c21</span>';
+        foot.innerHTML = '<span class="stamp thunk">Confirmed</span>';
+        await sleep(4200);
+      }
+    })();
+    return () => { dead = true; };
+  }, []);
+
+  const onMove = (e) => {
+    if (prefersReducedMotion() || !compRef.current) return;
+    const r = compRef.current.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    monRef.current.style.setProperty('--ry', `${x * 7}deg`);
+    monRef.current.style.setProperty('--rx', `${-y * 6}deg`);
+    sheetRef.current.style.setProperty('--px', `${x * -14}px`);
+    sheetRef.current.style.setProperty('--py', `${y * -10}px`);
+  };
+  const onLeave = () => {
+    if (!monRef.current || !sheetRef.current) return;
+    ['--ry', '--rx'].forEach((k) => monRef.current.style.setProperty(k, '0deg'));
+    ['--px', '--py'].forEach((k) => sheetRef.current.style.setProperty(k, '0'));
+  };
 
   return (
-    <section id="hero" className="landing-hero-section" ref={containerRef}>
-      {/* Background ambient lighting */}
-      <div className="hero-radial-glow" aria-hidden="true" />
-
-      {/* Main Headline & Lead */}
-      <div className="hero-content-wrap">
-        <div className="hero-badge-pill">
-          <Activity size={14} className="hero-badge-pulse" />
-          <span>Offline Mission-Critical Clinical Documentation</span>
+    <header className="hero" id="hero">
+      <div className="ruler" aria-hidden="true"><div className="wrap"><span>25 mm/s</span><span>10 mm/mV</span><span>EMS RUN SHEET</span></div></div>
+      <div className="wrap hero-in">
+        <div>
+          <div className="eyebrow rv">Offline clinical record for first responders</div>
+          <h1 className="rv" style={{ '--d': 1 }}>The run sheet that <span className="u">writes itself</span>.</h1>
+          <p className="lead rv" style={{ '--d': 2 }}>Say what you gave, type it, or photograph the note on your glove. You get a timestamped record you can hand over and nobody can quietly change. No signal needed.</p>
+          <div className="cta rv" style={{ '--d': 3 }}>
+            <button type="button" className="btn pri" data-cur onClick={() => onOpenApp && onOpenApp('/app')}>
+              Open the field app <ArrowRight size={14} strokeWidth={2} />
+            </button>
+            <a className="btn" href="#tamper-demo" data-cur>Try to tamper with a record</a>
+          </div>
+          <div className="deva-mark rv" style={{ '--d': 4 }}>संजीवनी <small>the herb that revives · lekh, a written record</small></div>
         </div>
-
-        <h1 className="hero-display-title">
-          Say it once. It becomes the <em>record</em>.
-        </h1>
-
-        <p className="hero-lead-text">
-          Sanjeevani Lekh turns a paramedic's chaotic field notes into structured, human-confirmed
-          medical records, offline, and sealed so nothing can be changed quietly.
-        </p>
-
-        {/* CTA Group */}
-        <div className="hero-cta-group">
-          <button
-            type="button"
-            className="hero-primary-btn"
-            onClick={onOpenApp}
-          >
-            <span>Open the app</span>
-            <ArrowRight size={15} strokeWidth={2.2} />
-          </button>
-          <a
-            href="/docs"
-            onClick={(e) => {
-              if (onOpenDocs) {
-                e.preventDefault();
-                onOpenDocs();
-              }
-            }}
-            className="hero-docs-btn"
-            title="Read System Architecture & Documentation"
-            aria-label="Documentation"
-          >
-            <BookOpen size={15} strokeWidth={2.2} />
-            <span>Documentation</span>
-          </a>
-          <a
-            href="https://github.com/Milindverma24/Virtusa_Jatayu2026"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hero-github-btn"
-            title="View Project on GitHub"
-            aria-label="View Project on GitHub"
-          >
-            <HugeiconsIcon icon={GithubIcon} size={15} strokeWidth={2} />
-            <span>GitHub</span>
-          </a>
+        <div className="comp rv" style={{ '--d': 2 }} ref={compRef} onPointerMove={onMove} onPointerLeave={onLeave}>
+          <div className="monitor mon" ref={monRef}>
+            <div className="mhead"><span>MEDIC-07 · AMBULANCE 01</span><span style={{ color: 'var(--herb)' }}>● LIVE</span></div>
+            <div className="vit">
+              <div><small>HR</small><b ref={(el) => { vitalsRef.current.hr = el; }}>82</b><i>bpm</i></div>
+              <div><small>SpO₂</small><b ref={(el) => { vitalsRef.current.sp = el; }}>97</b><i>%</i></div>
+              <div><small>NIBP</small><b ref={(el) => { vitalsRef.current.bp = el; }}>128/82</b></div>
+            </div>
+            <canvas id="hecg" ref={ecgRef} aria-hidden="true" />
+            <div className="say" ref={sayRef} aria-hidden="true" />
+          </div>
+          <div className="sheet" ref={sheetRef}>
+            <h4><span>Medication &amp; procedures</span><span>ENC-4CAAE434</span></h4>
+            <div ref={linesRef} />
+            <div className="foot" ref={footRef} />
+          </div>
         </div>
       </div>
-
-      {/* =====================================================================
-          SCREEN-WIDE LIVE CLINICAL ECG WAVEFORM & PARAMEDIC DICTATION TELEMETRY
-          ===================================================================== */}
-      <div className="hero-telemetry-fullwidth" aria-label="Real-time Lead II ECG and Physiological Telemetry">
-        <div className="telemetry-canvas-container">
-          <canvas ref={canvasRef} className="fullwidth-telemetry-canvas" />
-        </div>
-      </div>
-
-      {/* Trust Badges Row */}
-      <div className="hero-trust-row" id="trust-row">
-        <div className="trust-item">
-          <WifiOff size={15} strokeWidth={1.8} className="trust-icon" />
-          <span>100% Offline Capable</span>
-        </div>
-        <span className="trust-sep">·</span>
-        <div className="trust-item">
-          <Cpu size={15} strokeWidth={1.8} className="trust-icon" />
-          <span>Local On-Device Clinical NLP</span>
-        </div>
-        <span className="trust-sep">·</span>
-        <div className="trust-item">
-          <UserCheck size={15} strokeWidth={1.8} className="trust-icon" />
-          <span>Human-in-the-Loop Locked</span>
-        </div>
-        <span className="trust-sep">·</span>
-        <div className="trust-item">
-          <ShieldCheck size={15} strokeWidth={1.8} className="trust-icon" />
-          <span>SHA-256 Tamper-Evident Ledger</span>
-        </div>
-      </div>
-    </section>
+    </header>
   );
 }

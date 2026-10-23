@@ -880,7 +880,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
               >
                 <div>
                   <div className="deck-card-head">
-                    <div className="deck-icon-badge" style={{ background: 'rgba(45, 212, 191, 0.12)', borderColor: 'rgba(45, 212, 191, 0.25)', color: 'var(--accent)' }}>
+                    <div className="deck-icon-badge" style={{ background: 'rgba(127, 176, 255, 0.12)', borderColor: 'rgba(127, 176, 255, 0.25)', color: 'var(--accent)' }}>
                       <Camera size={22} strokeWidth={2} />
                     </div>
                     <div>
@@ -892,7 +892,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
                   </div>
 
                   <div className="preset-chips-cluster">
-                    <span className="preset-chip" style={{ color: 'var(--accent)', borderColor: 'rgba(45, 212, 191, 0.3)' }}>
+                    <span className="preset-chip" style={{ color: 'var(--accent)', borderColor: 'rgba(127, 176, 255, 0.3)' }}>
                       <ShieldCheck size={11} />
                       <span>On-Device TrOCR</span>
                     </span>
@@ -978,7 +978,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
           <div className="stepper-container" aria-live="polite">
             <div className="stepper-card" style={{ maxWidth: 540 }}>
               <div className="stepper-header">
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(76, 141, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(75, 242, 162, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
                   <Activity size={22} className="hero-badge-pulse" />
                 </div>
                 <div>
@@ -1060,7 +1060,7 @@ export default function App({ onBackToLanding, onOpenDocs }) {
                 </div>
 
                 {draft.summary && (
-                  <div style={{ marginTop: 16, padding: 16, borderRadius: 12, background: 'rgba(76, 141, 255, 0.08)', border: '1px solid rgba(76, 141, 255, 0.25)' }}>
+                  <div style={{ marginTop: 16, padding: 16, borderRadius: 12, background: 'rgba(75, 242, 162, 0.08)', border: '1px solid rgba(75, 242, 162, 0.25)' }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <Sparkles size={14} /> AI Clinical Summary
                     </div>
@@ -1141,8 +1141,8 @@ export default function App({ onBackToLanding, onOpenDocs }) {
                             <div style={{
                               marginTop: 8,
                               padding: '6px 12px',
-                              background: 'rgba(76, 141, 255, 0.08)',
-                              border: '1px solid rgba(76, 141, 255, 0.25)',
+                              background: 'rgba(75, 242, 162, 0.08)',
+                              border: '1px solid rgba(75, 242, 162, 0.25)',
                               borderRadius: 8,
                               fontSize: 12.5,
                               color: 'var(--primary)',
@@ -1253,13 +1253,16 @@ export default function App({ onBackToLanding, onOpenDocs }) {
               display: 'inline-flex',
               padding: 22,
               borderRadius: '50%',
-              background: 'rgba(52, 211, 153, 0.15)',
-              border: '2px solid rgba(52, 211, 153, 0.4)',
+              background: 'rgba(75, 242, 162, 0.15)',
+              border: '2px solid rgba(75, 242, 162, 0.4)',
               color: 'var(--success)',
               marginBottom: 20,
-              boxShadow: '0 0 36px rgba(52, 211, 153, 0.3)'
+              boxShadow: '0 0 36px rgba(75, 242, 162, 0.3)'
             }}>
               <CheckCircle2 size={54} strokeWidth={2.2} />
+            </div>
+            <div style={{ height: 0, position: 'relative', pointerEvents: 'none' }} aria-hidden="true">
+              <span className="seal-stamp">Sealed</span>
             </div>
 
             <h1 style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.5px' }}>

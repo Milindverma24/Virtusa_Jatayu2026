@@ -6,21 +6,21 @@ import './CardNav.css';
 
 const THEMES = {
   dark: {
-    '--cn-panel': 'rgba(10, 14, 22, 0.72)',
+    '--cn-panel': 'rgba(6, 16, 15, 0.72)',
     '--cn-solid': '#0B0F17',
     '--cn-edge': 'rgba(255, 255, 255, 0.08)',
     '--cn-highlight': 'rgba(255, 255, 255, 0.12)',
     '--cn-shadow': '0 20px 48px -10px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.08)',
-    '--cn-text': '#E8EDF4',
+    '--cn-text': '#E4F1EC',
     '--cn-muted': 'rgba(232, 237, 244, 0.55)',
     '--cn-hover': 'rgba(255, 255, 255, 0.08)',
-    '--cn-ring': '#4C8DFF',
+    '--cn-ring': '#4BF2A2',
     '--cn-tile': 'rgba(20, 28, 41, 0.52)',
     '--cn-tile-rim':
       'inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 24px -4px rgba(0, 0, 0, 0.45)',
-    '--cn-cta': 'linear-gradient(135deg, #4C8DFF 0%, #2DD4BF 100%)',
-    '--cn-cta-ink': '#090D13',
-    '--cn-cta-shadow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 16px -6px rgba(76, 141, 255, 0.4)',
+    '--cn-cta': 'linear-gradient(135deg, #4BF2A2 0%, #7FB0FF 100%)',
+    '--cn-cta-ink': '#06100F',
+    '--cn-cta-shadow': 'inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 16px -6px rgba(75, 242, 162, 0.4)',
     '--cn-cta-hover': 'brightness(1.08)'
   },
   light: {

@@ -598,7 +598,7 @@ response = client.post(
 
               <div className="zone-flow-list" style={{ margin: '20px 0' }}>
                 <div className="zone-flow-item">
-                  <CheckCircle2 size={18} style={{ color: '#2DD4BF', flexShrink: 0, marginTop: 2 }} />
+                  <CheckCircle2 size={18} style={{ color: '#7FB0FF', flexShrink: 0, marginTop: 2 }} />
                   <div className="zone-flow-item-content">
                     <strong style={{ fontSize: 14 }}>1. Ground-Truth Substring Grounding (source_text)</strong>
                     <span>
@@ -609,7 +609,7 @@ response = client.post(
                 </div>
 
                 <div className="zone-flow-item">
-                  <CheckCircle2 size={18} style={{ color: '#2DD4BF', flexShrink: 0, marginTop: 2 }} />
+                  <CheckCircle2 size={18} style={{ color: '#7FB0FF', flexShrink: 0, marginTop: 2 }} />
                   <div className="zone-flow-item-content">
                     <strong style={{ fontSize: 14 }}>2. Drug Reference Safe Range Bounds</strong>
                     <span>
@@ -620,7 +620,7 @@ response = client.post(
                 </div>
 
                 <div className="zone-flow-item">
-                  <CheckCircle2 size={18} style={{ color: '#2DD4BF', flexShrink: 0, marginTop: 2 }} />
+                  <CheckCircle2 size={18} style={{ color: '#7FB0FF', flexShrink: 0, marginTop: 2 }} />
                   <div className="zone-flow-item-content">
                     <strong style={{ fontSize: 14 }}>3. Lexical Normalization of Routes & Units</strong>
                     <span>
@@ -631,7 +631,7 @@ response = client.post(
                 </div>
 
                 <div className="zone-flow-item">
-                  <CheckCircle2 size={18} style={{ color: '#2DD4BF', flexShrink: 0, marginTop: 2 }} />
+                  <CheckCircle2 size={18} style={{ color: '#7FB0FF', flexShrink: 0, marginTop: 2 }} />
                   <div className="zone-flow-item-content">
                     <strong style={{ fontSize: 14 }}>4. Optional Clinical BERT (n2c2) Second-Opinion Validator</strong>
                     <span>
@@ -775,14 +775,14 @@ END;`}
                   </thead>
                   <tbody>
                     <tr>
-                      <td><strong style={{ color: '#2DD4BF' }}>8 GB RAM</strong> (Base)</td>
+                      <td><strong style={{ color: '#7FB0FF' }}>8 GB RAM</strong> (Base)</td>
                       <td><code>medgemma1.5</code> (4B Q4_K_M)</td>
                       <td><code>whisper-small.en</code> (GGML)</td>
                       <td>~4.2 sec</td>
                       <td>~1.8–2.4 sec</td>
                     </tr>
                     <tr>
-                      <td><strong style={{ color: '#60A5FA' }}>16 GB RAM</strong> (Recommended)</td>
+                      <td><strong style={{ color: '#7FB0FF' }}>16 GB RAM</strong> (Recommended)</td>
                       <td><code>medgemma1.5</code> / <code>gemma3:12b</code></td>
                       <td><code>whisper-medium.en</code></td>
                       <td>~2.8 sec</td>

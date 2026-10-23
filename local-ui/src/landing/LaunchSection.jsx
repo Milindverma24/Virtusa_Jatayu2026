@@ -1,88 +1,28 @@
 import React from 'react';
-import {
-  ArrowRight,
-  Activity,
-  ShieldCheck,
-  CheckCircle2,
-  Lock
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
-export default function LaunchSection({ onOpenApp }) {
+export default function LaunchSection({ onOpenApp, onOpenDocs }) {
   return (
-    <section id="launch-section" className="launch-unique-section">
-      {/* Background Lighting Aura */}
-      <div className="launch-ambient-glow" aria-hidden="true" />
-
-      <div className="launch-unique-container">
-        {/* Mission Ready Indicator */}
-        <div className="launch-status-pill">
-          <span className="pulse-dot-teal" />
-          <span>Offline System Armed · Standalone Fast Mode</span>
-        </div>
-
-        {/* Cinematic Headline */}
-        <h2 className="launch-unique-title">
-          In the golden hour, every second matters.<br />
-          <em>So does the record.</em>
-        </h2>
-
-        <p className="launch-unique-sub">
-          No cloud dependency. No erased notes. No guesswork hours later.<br />
-          Immediate, structured medical handover the moment the ambulance doors open.
-        </p>
-
-        {/* Single Confident Action (No secondary 'inspect audit chain') */}
-        <div className="launch-action-wrap">
-          <button
-            type="button"
-            className="launch-main-button"
-            onClick={onOpenApp}
-          >
-            <span>Open Sanjeevani Lekh</span>
-            <ArrowRight size={18} strokeWidth={2.4} />
-          </button>
-
-          <div className="launch-sub-note mono">
-            <span>Runs 100% in browser RAM</span>
-            <span className="note-dot">·</span>
-            <span>Zero cloud telemetry</span>
-            <span className="note-dot">·</span>
-            <span>Works completely offline</span>
+    <section className="pad mon sheetUp" id="launch-section">
+      <div className="wrap">
+        <div className="launch">
+          <h2 className="rv">In the golden hour, every second matters. <em>So does the record.</em></h2>
+          <div className="rv" style={{ '--d': 1 }}>
+            <p>No cloud dependency. No erased notes. No guesswork hours later. A structured handover the moment the doors open.</p>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <button type="button" className="btn pri" data-cur onClick={() => onOpenApp && onOpenApp('/app')}>
+                Launch the field app <ArrowRight size={14} strokeWidth={2} />
+              </button>
+              <button type="button" className="btn" data-cur onClick={() => onOpenDocs && onOpenDocs()}>Read the architecture</button>
+            </div>
           </div>
         </div>
-
-        {/* Unique Clinical Ledger Seal Badge */}
-        <div className="field-seal-badge mono">
-          <div className="seal-badge-left">
-            <ShieldCheck size={15} color="var(--accent)" />
-            <span>FIELD-TO-RECORD DEPLOYMENT</span>
-          </div>
-          <span className="seal-badge-divider">·</span>
-          <span className="seal-badge-hash">ENC: B1F073D8 · SHA-256 LEDGER INTACT</span>
+        <div className="foot-row">
+          <span><b>संजीवनी लेख</b> &nbsp; Sanjeevani Lekh</span>
+          <span>Research and portfolio project. Not a medical device. Every record is confirmed by a responder.</span>
+          <a href="https://github.com/Milindverma24/Virtusa_Jatayu2026" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </div>
-
-      {/* Minimalist Clinical Footer */}
-      <footer className="landing-site-footer">
-        <div className="footer-inner-content">
-          <div className="footer-brand-meta">
-            <div className="footer-logo-mark">
-              <Activity size={15} strokeWidth={2.5} />
-            </div>
-            <span className="footer-brand-name">Sanjeevani Lekh</span>
-            <span className="footer-divider-dot">·</span>
-            <span className="footer-desc">Field-to-Record Paramedic Documentation</span>
-          </div>
-
-          <div className="footer-compliance-tags mono">
-            <span>FHIR-Lite</span>
-            <span className="footer-divider-dot">·</span>
-            <span>100% On-Device</span>
-            <span className="footer-divider-dot">·</span>
-            <span>SHA-256 Tamper-Proof Chain</span>
-          </div>
-        </div>
-      </footer>
     </section>
   );
 }

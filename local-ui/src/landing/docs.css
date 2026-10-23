@@ -21,7 +21,7 @@
   left: 20%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(45, 212, 191, 0.08) 0%, rgba(76, 141, 255, 0.03) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(127, 176, 255, 0.08) 0%, rgba(75, 242, 162, 0.03) 50%, transparent 70%);
   filter: blur(80px);
   pointer-events: none;
   z-index: 0;
@@ -33,7 +33,7 @@
   right: 10%;
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, rgba(76, 141, 255, 0.07) 0%, rgba(45, 212, 191, 0.02) 60%, transparent 75%);
+  background: radial-gradient(circle, rgba(75, 242, 162, 0.07) 0%, rgba(127, 176, 255, 0.02) 60%, transparent 75%);
   filter: blur(90px);
   pointer-events: none;
   z-index: 0;
@@ -67,7 +67,7 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #64748B;
+  color: #587068;
   margin-bottom: 16px;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
@@ -79,11 +79,11 @@
 }
 
 .docs-breadcrumb a:hover {
-  color: #2DD4BF;
+  color: #7FB0FF;
 }
 
 .docs-hero-title {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: clamp(32px, 5vw, 48px);
   font-weight: 500;
   line-height: 1.15;
@@ -93,9 +93,11 @@
 }
 
 .docs-hero-title em {
+  padding-right: 0.14em;
+  margin-right: -0.14em;
   font-style: italic;
-  font-family: "Fraunces", Georgia, serif;
-  background: linear-gradient(135deg, #2DD4BF 20%, #4C8DFF 100%);
+  font-family: var(--font-serif);
+  background: linear-gradient(135deg, #7FB0FF 20%, #4BF2A2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -133,13 +135,13 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #2DD4BF;
-  box-shadow: 0 0 8px #2DD4BF;
+  background: #7FB0FF;
+  box-shadow: 0 0 8px #7FB0FF;
 }
 
 .docs-spec-pill.blue .pill-dot {
-  background: #4C8DFF;
-  box-shadow: 0 0 8px #4C8DFF;
+  background: #4BF2A2;
+  box-shadow: 0 0 8px #4BF2A2;
 }
 
 .docs-spec-pill.amber .pill-dot {
@@ -157,7 +159,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%);
+  background: linear-gradient(135deg, #7FB0FF 0%, #0D9488 100%);
   color: #042F2E;
   font-weight: 600;
   font-size: 14px;
@@ -167,13 +169,13 @@
   cursor: pointer;
   text-decoration: none;
   transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 4px 14px rgba(45, 212, 191, 0.25);
+  box-shadow: 0 4px 14px rgba(127, 176, 255, 0.25);
 }
 
 .docs-btn-primary:hover {
   transform: translateY(-1px);
   filter: brightness(1.08);
-  box-shadow: 0 6px 20px rgba(45, 212, 191, 0.35);
+  box-shadow: 0 6px 20px rgba(127, 176, 255, 0.35);
 }
 
 .docs-btn-secondary {
@@ -231,7 +233,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #64748B;
+  color: #587068;
   margin: 0 0 14px 0;
   font-weight: 700;
 }
@@ -259,20 +261,20 @@
 
 .docs-nav-item a:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: #2DD4BF;
+  color: #7FB0FF;
 }
 
 .docs-nav-item a.active {
-  background: rgba(45, 212, 191, 0.12);
-  color: #2DD4BF;
+  background: rgba(127, 176, 255, 0.12);
+  color: #7FB0FF;
   font-weight: 600;
-  border-left: 2px solid #2DD4BF;
+  border-left: 2px solid #7FB0FF;
 }
 
 .docs-nav-item .nav-num {
   font-family: ui-monospace, monospace;
   font-size: 11px;
-  color: #64748B;
+  color: #587068;
 }
 
 /* ==========================================================================
@@ -291,16 +293,16 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #2DD4BF;
-  background: rgba(45, 212, 191, 0.1);
+  color: #7FB0FF;
+  background: rgba(127, 176, 255, 0.1);
   padding: 4px 10px;
   border-radius: 6px;
   margin-bottom: 12px;
-  border: 1px solid rgba(45, 212, 191, 0.2);
+  border: 1px solid rgba(127, 176, 255, 0.2);
 }
 
 .docs-section-title {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-serif);
   font-size: clamp(24px, 3.5vw, 32px);
   font-weight: 500;
   color: #F8FAFC;
@@ -321,7 +323,7 @@
 
 .docs-paragraph code {
   background: rgba(255, 255, 255, 0.08);
-  color: #2DD4BF;
+  color: #7FB0FF;
   padding: 2px 6px;
   border-radius: 4px;
   font-family: ui-monospace, monospace;
@@ -355,12 +357,12 @@
 }
 
 .zone-card.edge {
-  border-color: rgba(45, 212, 191, 0.25);
-  box-shadow: 0 12px 32px -8px rgba(45, 212, 191, 0.08);
+  border-color: rgba(127, 176, 255, 0.25);
+  box-shadow: 0 12px 32px -8px rgba(127, 176, 255, 0.08);
 }
 
 .zone-card.cloud {
-  border-color: rgba(76, 141, 255, 0.2);
+  border-color: rgba(75, 242, 162, 0.2);
 }
 
 .zone-badge {
@@ -377,13 +379,13 @@
 }
 
 .zone-card.edge .zone-badge {
-  background: rgba(45, 212, 191, 0.15);
-  color: #2DD4BF;
+  background: rgba(127, 176, 255, 0.15);
+  color: #7FB0FF;
 }
 
 .zone-card.cloud .zone-badge {
-  background: rgba(76, 141, 255, 0.15);
-  color: #60A5FA;
+  background: rgba(75, 242, 162, 0.15);
+  color: #7FB0FF;
 }
 
 .zone-title {
@@ -418,13 +420,13 @@
 }
 
 .zone-flow-item-icon {
-  color: #2DD4BF;
+  color: #7FB0FF;
   flex-shrink: 0;
   margin-top: 1px;
 }
 
 .zone-card.cloud .zone-flow-item-icon {
-  color: #60A5FA;
+  color: #7FB0FF;
 }
 
 .zone-flow-item-content {
@@ -456,7 +458,7 @@
   bottom: 30px;
   left: 27px;
   width: 2px;
-  background: linear-gradient(180deg, #2DD4BF 0%, #4C8DFF 50%, rgba(255, 255, 255, 0.1) 100%);
+  background: linear-gradient(180deg, #7FB0FF 0%, #4BF2A2 50%, rgba(255, 255, 255, 0.1) 100%);
   z-index: 0;
 }
 
@@ -476,7 +478,7 @@
 
 .pipeline-step-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(45, 212, 191, 0.3);
+  border-color: rgba(127, 176, 255, 0.3);
   box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.4);
 }
 
@@ -492,15 +494,15 @@
   height: 36px;
   border-radius: 50%;
   background: #090D14;
-  border: 2px solid #2DD4BF;
-  color: #2DD4BF;
+  border: 2px solid #7FB0FF;
+  color: #7FB0FF;
   font-family: ui-monospace, monospace;
   font-weight: 700;
   font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 12px rgba(45, 212, 191, 0.3);
+  box-shadow: 0 0 12px rgba(127, 176, 255, 0.3);
 }
 
 .step-details-wrap {
@@ -565,15 +567,15 @@
 .code-header-title {
   font-family: ui-monospace, monospace;
   font-size: 12px;
-  color: #64748B;
+  color: #587068;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .code-badge {
-  background: rgba(45, 212, 191, 0.15);
-  color: #2DD4BF;
+  background: rgba(127, 176, 255, 0.15);
+  color: #7FB0FF;
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 10px;
@@ -644,13 +646,13 @@
 }
 
 .method-get {
-  background: rgba(45, 212, 191, 0.15);
-  color: #2DD4BF;
+  background: rgba(127, 176, 255, 0.15);
+  color: #7FB0FF;
 }
 
 .method-post {
-  background: rgba(76, 141, 255, 0.15);
-  color: #60A5FA;
+  background: rgba(75, 242, 162, 0.15);
+  color: #7FB0FF;
 }
 
 /* ==========================================================================
@@ -658,17 +660,17 @@
    ========================================================================== */
 .formula-box {
   background: linear-gradient(135deg, rgba(20, 28, 43, 0.8) 0%, rgba(11, 15, 23, 0.9) 100%);
-  border: 1px solid rgba(45, 212, 191, 0.25);
+  border: 1px solid rgba(127, 176, 255, 0.25);
   border-radius: 14px;
   padding: 24px;
   margin: 24px 0;
-  box-shadow: 0 10px 30px -10px rgba(45, 212, 191, 0.1);
+  box-shadow: 0 10px 30px -10px rgba(127, 176, 255, 0.1);
 }
 
 .formula-title {
   font-size: 14px;
   font-weight: 600;
-  color: #2DD4BF;
+  color: #7FB0FF;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin: 0 0 12px 0;
@@ -718,8 +720,8 @@
 }
 
 .docs-back-top:hover {
-  background: #2DD4BF;
+  background: #7FB0FF;
   color: #042F2E;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(45, 212, 191, 0.4);
+  box-shadow: 0 8px 24px rgba(127, 176, 255, 0.4);
 }

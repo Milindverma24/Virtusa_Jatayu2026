@@ -1,17 +1,23 @@
-import Link from 'next/link';
 import { getAuditRecords } from '../lib/supabase';
-import { ShieldCheck, ArrowRight, Clock, User, Ambulance } from 'lucide-react';
+import StatCard from '../components/StatCard';
+import ShiftBoard from '../components/ShiftBoard';
+import Sparkline from '../components/Sparkline';
+import IntegrityRing from '../components/IntegrityRing';
+import EncounterTable from '../components/EncounterTable';
 
 export const revalidate = 0;
 
+const DAYS = 14;
+
 export default async function EncountersPage() {
   const records = await getAuditRecords();
+  const now = Date.now();
 
   // Aggregate by encounter_id
-  const encounterMap = {};
+  const map = {};
   records.forEach((r) => {
-    if (!encounterMap[r.encounter_id]) {
-      encounterMap[r.encounter_id] = {
+    if (!map[r.encounter_id]) {
+      map[r.encounter_id] = {
         encounter_id: r.encounter_id,
         device_id: r.device_id,
         first_created: r.created_at,
@@ -20,106 +26,64 @@ export default async function EncountersPage() {
         records: [],
       };
     }
-    encounterMap[r.encounter_id].responders.add(r.reviewed_by);
-    encounterMap[r.encounter_id].records.push(r);
+    const e = map[r.encounter_id];
+    if (r.created_at < e.first_created) e.first_created = r.created_at;
+    if (r.created_at > e.last_created) e.last_created = r.created_at;
+    e.responders.add(r.reviewed_by);
+    e.records.push(r);
   });
+  const encounters = Object.values(map);
 
-  const encounterList = Object.values(encounterMap);
-  const totalItems = records.reduce((acc, r) => {
-    const entries = r.record_json?.entry || [];
-    return acc + entries.length;
-  }, 0);
+  const totalItems = records.reduce((acc, r) => acc + (r.record_json?.entry?.length || 0), 0);
+  const deviceCount = new Set(records.map((r) => r.device_id)).size;
+
+  // Encounters per day for the sparkline
+  const perDay = Array.from({ length: DAYS }, () => 0);
+  encounters.forEach((e) => {
+    const age = Math.floor((now - new Date(e.first_created).getTime()) / 86400000);
+    if (age >= 0 && age < DAYS) perDay[DAYS - 1 - age] += 1;
+  });
+  const peak = Math.max(...perDay);
+
+  const rows = encounters.map((e) => ({
+    id: e.encounter_id,
+    device: e.device_id,
+    responders: Array.from(e.responders).join(', '),
+    when: new Date(e.last_created).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }),
+    items: e.records.reduce((acc, r) => acc + (r.record_json?.entry?.length || 0), 0),
+  }));
 
   return (
     <div>
+      <div className="page-head">
+        <div className="eyebrow">Read-only supervisor view · synced via Supabase</div>
+        <h1>The whole shift on one board.</h1>
+        <p>Every vehicle gets a lane. Open any encounter to read the record and check its hash.</p>
+      </div>
+
       <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-label">Total Field Encounters</div>
-          <div className="stat-value">{encounterList.length}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Confirmed Clinical Items</div>
-          <div className="stat-value">{totalItems}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Active Field Devices</div>
-          <div className="stat-value">{new Set(records.map((r) => r.device_id)).size}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Audit Verification</div>
-          <div className="stat-value" style={{ color: 'var(--success)', fontSize: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <ShieldCheck size={20} /> 100% Chain Intact
+        <StatCard label="Field encounters" value={encounters.length} />
+        <StatCard label="Confirmed clinical items" value={totalItems} />
+        <StatCard label="Vehicles reporting" value={deviceCount} />
+        <StatCard label="Records in chain" value={records.length} color="var(--success)" />
+      </div>
+
+      <ShiftBoard encounters={encounters} now={now} />
+
+      <div className="mid-grid">
+        <div className="card">
+          <div className="card-head" style={{ marginBottom: 0 }}>
+            <span className="eyebrow">Encounters, last {DAYS} days</span>
+            <span className="mono" style={{ fontSize: 12, color: 'var(--muted)' }}>peak {peak}</span>
           </div>
+          <Sparkline values={perDay} />
+        </div>
+        <div className="card">
+          <IntegrityRing total={records.length} />
         </div>
       </div>
 
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 700 }}>Synced Encounters</h2>
-          <span style={{ fontSize: 13, color: 'var(--muted)' }}>
-            Read-only supervisor view · Synced via Supabase
-          </span>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Encounter ID</th>
-              <th>Device</th>
-              <th>Confirmed By</th>
-              <th>Date & Time</th>
-              <th>Items</th>
-              <th>Chain Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {encounterList.map((enc) => {
-              const itemCount = enc.records.reduce((acc, r) => acc + (r.record_json?.entry?.length || 0), 0);
-              const dateStr = new Date(enc.last_created).toLocaleDateString();
-              const timeStr = new Date(enc.last_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-              return (
-                <tr key={enc.encounter_id}>
-                  <td>
-                    <span className="mono" style={{ fontWeight: 600, color: 'var(--primary)' }}>
-                      {enc.encounter_id}
-                    </span>
-                  </td>
-                  <td>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'var(--muted)' }}>
-                      <Ambulance size={14} /> {enc.device_id}
-                    </span>
-                  </td>
-                  <td>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                      <User size={13} color="var(--muted)" /> {Array.from(enc.responders).join(', ')}
-                    </span>
-                  </td>
-                  <td>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'var(--muted)' }}>
-                      <Clock size={13} /> {dateStr} {timeStr}
-                    </span>
-                  </td>
-                  <td>
-                    <strong>{itemCount}</strong> <span style={{ color: 'var(--muted)', fontSize: 12 }}>items</span>
-                  </td>
-                  <td>
-                    <span className="badge success">
-                      <ShieldCheck size={12} /> Verified
-                    </span>
-                  </td>
-                  <td>
-                    <Link href={`/encounters/${enc.encounter_id}`} className="btn">
-                      View Report <ArrowRight size={14} />
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <EncounterTable rows={rows} />
     </div>
   );
 }
