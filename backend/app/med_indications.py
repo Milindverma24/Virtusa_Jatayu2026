@@ -87,7 +87,7 @@ def get_medication_indication(drug_name: str, client: Optional[Any] = None) -> s
         import ollama
         from app.config import settings
 
-        active_client = client or ollama.Client(host=settings.OLLAMA_BASE_URL)
+        active_client = client or ollama.Client(host=settings.OLLAMA_BASE_URL, timeout=3.0)
         prompt = (
             f"In 1 short sentence, state the primary clinical medical indication and therapeutic use of {drug_name}."
             " Do not explain, return ONLY the indication."

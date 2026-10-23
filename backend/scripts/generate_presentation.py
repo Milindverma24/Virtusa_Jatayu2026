@@ -136,13 +136,19 @@ def create_presentation(output_path: Path) -> None:
     p3.font.size = Pt(14)
     p3.font.color.rgb = COLOR_MUTED
 
-    # Bottom metadata
-    tb_meta = s1.shapes.add_textbox(Inches(1.4), Inches(5.3), Inches(10.5), Inches(0.6))
+    # Bottom metadata & Team
+    tb_meta = s1.shapes.add_textbox(Inches(1.4), Inches(5.1), Inches(10.5), Inches(1.0))
     tf = tb_meta.text_frame
     p = tf.paragraphs[0]
-    p.text = "Built for First Responders, Paramedics, and Hospital Handover Teams | 100% Air-Gapped & HIPAA Compliant"
+    p.text = "Team: Milind Verma • Nikhil Agrawal • Gaurav Kumar • Riya Mehta | Virtusa Jatayu 2026"
     p.font.size = Pt(13)
-    p.font.color.rgb = COLOR_GREEN
+    p.font.bold = True
+    p.font.color.rgb = COLOR_BLUE
+
+    p_meta = tf.add_paragraph()
+    p_meta.text = "Built for First Responders, Paramedics, and Hospital Handover Teams | 100% Air-Gapped & HIPAA Compliant"
+    p_meta.font.size = Pt(12)
+    p_meta.font.color.rgb = COLOR_GREEN
 
     # =========================================================================
     # SLIDE 2: THE PROBLEM
@@ -498,6 +504,15 @@ def create_presentation(output_path: Path) -> None:
     p.text = "• Phase 1 (Near-Term):\nDirect Bluetooth telemetry link to Zoll and Physio-Control LIFEPAK cardiac monitors.\n\n• Phase 2 (Mid-Term):\nNEMSIS v3.5 and FHIR R4 automated hospital EHR dispatch sync upon ambulance arrival.\n\n• Phase 3 (Long-Term):\nMultilingual paramedic model extensions with Whisper fine-tuning for regional languages."
     p.font.size = Pt(14)
     p.font.color.rgb = COLOR_MUTED
+
+    # Bottom team footer
+    tb_foot = s12.shapes.add_textbox(Inches(0.8), Inches(6.9), Inches(11.7), Inches(0.4))
+    tf_f = tb_foot.text_frame
+    p_f = tf_f.paragraphs[0]
+    p_f.text = "Thank You! Questions & Live Demo Welcome. | Presented by: Milind Verma • Nikhil Agrawal • Gaurav Kumar • Riya Mehta"
+    p_f.font.size = Pt(12)
+    p_f.font.bold = True
+    p_f.font.color.rgb = COLOR_BLUE
 
     # Save
     prs.save(str(output_path))

@@ -533,16 +533,12 @@ async def extract_note(payload: ExtractRequest) -> ExtractionResult:
     try:
         result, _ = extract_clinical_data(payload.text)
         return result
-    except OllamaServiceError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Local Ollama service is not running or unreachable. Ensure Ollama is running at http://127.0.0.1:11434",
-        ) from exc
-    except ExtractionError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Failed to extract valid clinical schema after retry",
-        ) from exc
+    except (OllamaServiceError, ExtractionError) as exc:
+        logger.warning(
+            "Local LLM unavailable in /extract (%s): using zero-lag rule-based clinical extractor",
+            type(exc).__name__,
+        )
+        return extract_with_rules(payload.text)
 
 
 @app.post(
