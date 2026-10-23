@@ -175,6 +175,9 @@ This is a research and portfolio project. It is **not a medical device**. MedGem
 - [PRESENTATION.html](PRESENTATION.html) / [PPTX Deck](Sanjeevani_Lekh_Presentation.pptx): Project executive presentation deck
 - [AGENT.md](AGENT.md): instructions for AI coding assistants
 
-## Author
+## Contributors
 
-Riya Mehta · [GitHub](https://github.com/1754riya) · [LinkedIn](https://linkedin.com/in/riya-mehta-5bb64a28a)
+- **Milind Verma** · [GitHub](https://github.com/Milindverma24)
+- **Nikhil Agrawal** · [GitHub](https://github.com/agnikhil9897)
+- **Riya Mehta** · [GitHub](https://github.com/1754riya)
+
