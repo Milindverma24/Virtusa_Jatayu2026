@@ -93,7 +93,7 @@ def extract_clinical_data(
     user_message = _build_user_message(note_text)
     json_schema = get_extraction_json_schema()
 
-    active_client = client or ollama.Client(host=settings.OLLAMA_BASE_URL)
+    active_client = client or ollama.Client(host=settings.OLLAMA_BASE_URL, timeout=10.0)
     options: dict[str, Any] = {
         "temperature": settings.LLM_TEMPERATURE,
         "num_predict": 512,
@@ -207,7 +207,7 @@ def generate_clinical_summary(note_text: str, client: ollama.Client | None = Non
     if not note_text or not note_text.strip():
         return ""
 
-    active_client = client or ollama.Client(host=settings.OLLAMA_BASE_URL)
+    active_client = client or ollama.Client(host=settings.OLLAMA_BASE_URL, timeout=4.0)
     prompt = (
         "You are an emergency medical service (EMS) documentation assistant. "
         "Write a concise, professional 2-3 sentence clinical handover summary of the administered "
